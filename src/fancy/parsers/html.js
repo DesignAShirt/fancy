@@ -3,7 +3,7 @@
 var cheerio = require('cheerio');
 
 module.exports = function(contents, callback) {
-  $ = cheerio.load(contents);
+  var $ = cheerio.load(contents);
 
   var properties = []
     , addProp = function addProp(name, val) {

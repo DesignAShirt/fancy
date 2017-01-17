@@ -389,7 +389,7 @@ Fancy.prototype.requestPage = function(url, callback) {
       }
     }
 
-    var err = new Error('Not Found');
+    var err = new Error('Not Found: ' + url);
     err.status = 404;
     return callback(err);
   });

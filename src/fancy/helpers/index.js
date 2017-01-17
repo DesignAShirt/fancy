@@ -175,9 +175,14 @@ var helpers = function(ctx, fancy) {
 
       // FIXME: disallow direct access to data?  regular core.value should match if so
       for (var k in obj) {
-        // if (!content[k]) {
+        try {
+          // if (!content[k]) {
           content[k] = obj[k];
-        // }
+          // }
+        } catch (e) {
+          console.error("Error: You tried using reserved key '" + k + "' as a key in a view's model.");
+          throw e;
+        }
       }
 
       return content;
@@ -187,7 +192,12 @@ var helpers = function(ctx, fancy) {
       vals = vals || {};
       var res = fancy.createResponse(ctx.request.url, vals.page || ctx.page, ctx.request.params);
       for (var k in vals) {
-        res[k] = vals[k];
+        try {
+          res[k] = vals[k];
+        } catch (e) {
+          console.error("Error: You tried using reserved key '" + k + "' as a key in a partial's model.");
+          throw e;
+        }
       }
       // console.log('partial scope', res);
       if (!/\.ejs$/i.test(view)) {
