@@ -1,21 +1,16 @@
-var os = require('os')
-  , fs = require('fs')
-  , path = require('path');
+var os = require('os');
+var fs = require('fs');
+var path = require('path');
+var glob = require('glob');
+var gaze = require('gaze');
+var async = require('async');
 
-var glob = require('glob')
-  , gaze = require('gaze')
-  , async = require('async')
-  , debounce = require('debounce');
+var help = require('../../utils/help.js');
+var FancyPage = require('./lib/page.js');
+var orm = require('./lib/orm.js');
+var parsers = require('../parsers/index.js');
 
-var fingerprint = require('../../utils/fingerprint.js')
-  , help = require('../../utils/help.js')
-  , FancyPage = require('./lib/page.js')
-  , orm = require('./lib/orm.js')
-  , parsers = require('../parsers/index.js');
-
-var Page = orm.models.Page
-  , Property = orm.models.Property
-  , Resource = orm.models.Resource;
+// var Property = orm.models.Property;
 
 var IS_WIN = os.platform() === 'win32';
 var PROVIDER_PREFIX = 'provider:';

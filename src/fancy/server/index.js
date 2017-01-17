@@ -1,11 +1,7 @@
-var fs = require('fs')
-  , path = require('path');
-
-var express = require('express')
-  , logger = require('morgan')
-  , express = require('express')
-  , glob = require('glob');
-
+var path = require('path');
+var express = require('express');
+var logger = require('morgan');
+var glob = require('glob');
 var cluster = require('cluster');
 
 process.on('uncaughtException', function(err) {

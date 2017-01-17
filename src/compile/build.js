@@ -1,15 +1,10 @@
-var path = require('path')
-  , fs = require('fs');
-
-var rimraf = require('rimraf')
-  , mkdirp = require('mkdirp')
-  , ncp = require('ncp').ncp
-  , async = require('async');
+var path = require('path');
+var fs = require('fs');
+var ncp = require('ncp').ncp;
 
 ncp.stopOnError = true;
 
-var E = require('../utils/E.js')
-  , log = require('../utils/log.js');
+var log = require('../utils/log.js');
 
 var buildNode = require('./build-node/build-node.js');
 var buildS3 = require('./build-s3/build-s3.js');

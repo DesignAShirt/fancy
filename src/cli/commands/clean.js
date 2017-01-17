@@ -1,5 +1,4 @@
 var path = require('path');
-
 var rimraf = require('rimraf');
 
 var help = require('../../utils/help');

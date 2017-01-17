@@ -1,18 +1,17 @@
-var fs = require('fs')
-  , path = require('path');
-
+var fs = require('fs');
+var path = require('path');
 var async = require('async');
 
-var fingerprint = require('../../../utils/fingerprint.js')
-  , iterator = require('../../../utils/iterator.js')
-  , cache = require('../../../utils/cache.js')
-  , help = require('../../../utils/help.js')
-  , parsers = require('../../parsers/index.js')
-  , orm = require('./orm.js');
+var fingerprint = require('../../../utils/fingerprint.js');
+var iterator = require('../../../utils/iterator.js');
+// var cache = require('../../../utils/cache.js');
+var help = require('../../../utils/help.js');
+var parsers = require('../../parsers/index.js');
+var orm = require('./orm.js');
 
-var Page = orm.models.Page
-  , Property = orm.models.Property
-  , Resource = orm.models.Resource;
+var Page = orm.models.Page;
+// var Property = orm.models.Property;
+// var Resource = orm.models.Resource;
 
 // FIXME: using callback.call so callbacks refer to object is silly.  a ref can just be saved if needed
 // TODO: remove this object?  better to just build on top of sequelize objects maybe

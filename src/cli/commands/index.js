@@ -1,8 +1,8 @@
-var create = require('./create')
-  , serve = require('./serve')
-  , clean = require('./clean')
-  , build = require('./build')
-  , compile = require('./compile');
+var create = require('./create');
+var serve = require('./serve');
+var clean = require('./clean');
+var build = require('./build');
+var compile = require('./compile');
 
 var cmds = {
     create: create

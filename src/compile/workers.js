@@ -1,7 +1,3 @@
-var fs = require('fs')
-  , path = require('path');
-
-var cheerio = require('cheerio');
 var request = require('request');
 
 var cache = require('../fancy/index.js').cache;

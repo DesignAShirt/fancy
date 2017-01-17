@@ -1,4 +1,3 @@
-var fs = require('fs');
 var bunyan = require('bunyan');
 var PrettyStream = require('bunyan-prettystream');
 

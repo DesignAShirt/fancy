@@ -1,13 +1,12 @@
-var path = require('path')
-  , fs = require('fs');
+var path = require('path');
+var fs = require('fs');
+var rimraf = require('rimraf');
+var mkdirp = require('mkdirp');
+var ncp = require('ncp').ncp;
+var async = require('async');
 
-var rimraf = require('rimraf')
-  , mkdirp = require('mkdirp')
-  , ncp = require('ncp').ncp
-  , async = require('async');
-
-var E = require('../../utils/E.js')
-  , log = require('../../utils/log.js');
+var E = require('../../utils/E.js');
+var log = require('../../utils/log.js');
 
 var copy = module.exports.copy = function copy(src, dest, done) {
   var destDir = path.dirname(dest)

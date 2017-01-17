@@ -1,5 +1,5 @@
-var fs = require('fs')
-  , crypto = require('crypto');
+var fs = require('fs');
+var crypto = require('crypto');
 
 // http://stackoverflow.com/a/18658613/670023
 function fingerFile(f, algo, callback) {

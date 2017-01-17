@@ -1,7 +1,5 @@
-var debug = require('debug')('http');
-
-var Fancy = require('../../fancy/index')
-  , help = require('../../utils/help');
+var Fancy = require('../../fancy/index');
+var help = require('../../utils/help');
 
 var site = require('../lib/site.js');
 

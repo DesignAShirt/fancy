@@ -1,19 +1,11 @@
 var fs = require('fs')
-  , path = require('path')
-  , url = require('url')
-  , os = require('os');
+var path = require('path')
+var url = require('url')
+var os = require('os');
 
 var IS_WIN = os.platform() === 'win32';
 
-var express = require('express')
-  , glob = require('glob')
-  , _ = require('lodash');
-
-var file = require('./file.js')
-  , tell = require('./tell.js')
-  , log = require('./log.js');
-
-var dbClient;
+var glob = require('glob')
 
 var helpers = module.exports = {
   loadEnv: function(configEnv) {

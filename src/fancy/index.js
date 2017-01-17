@@ -1,18 +1,15 @@
-var fs = require('fs')
-  , path = require('path');
+var fs = require('fs');
+var path = require('path');
+var async = require('async');
+var glob = require('glob');
+var yaml = require('js-yaml');
+var urlPattern = require('url-pattern');
 
-var async = require('async')
-  , glob = require('glob')
-  , yaml = require('js-yaml')
-  , urlPattern = require('url-pattern');
-
-var server = require('./server/index.js')
-  , FancyDb = require('./db/index.js')
-  , parser = require('./parsers/index.js')
-  , help = require('../utils/help.js')
-  , objectUtil = require('../utils/object.js')
-  , fingerprint = require('../utils/fingerprint.js')
-  , cache = require('../utils/cache.js');
+var server = require('./server/index.js');
+var FancyDb = require('./db/index.js');
+var help = require('../utils/help.js');
+var objectUtil = require('../utils/object.js');
+var cache = require('../utils/cache.js');
 
 var helpers = require('./helpers/index.js');
 

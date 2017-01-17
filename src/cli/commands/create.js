@@ -1,5 +1,5 @@
-var inquirer = require('inquirer')
-  , extfs = require('extfs');
+var inquirer = require('inquirer');
+var extfs = require('extfs');
 
 var help = require('../../utils/help.js');
 var site = require('../lib/site.js');

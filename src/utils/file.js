@@ -1,8 +1,8 @@
-var fs = require('fs')
-  , path = require('path');
+var fs = require('fs');
+var path = require('path');
 
-var regex = require('./regex.js')
-  , E = require('./E.js');
+var regex = require('./regex.js');
+var E = require('./E.js');
 
 module.exports = {
   abs: function(relative) {

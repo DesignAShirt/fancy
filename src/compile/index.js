@@ -1,23 +1,18 @@
-var fs = require('fs')
-  , path = require('path')
-  , url = require('url')
-  , crypto = require('crypto');
+var fs = require('fs');
+var path = require('path');
+var crypto = require('crypto');
+var async = require('async');
+var mkdirp = require('mkdirp');
+var glob = require('glob');
+var request = require('request');
+var rimraf = require('rimraf');
+var _ = require('lodash');
 
-var async = require('async')
-  , mkdirp = require('mkdirp')
-  , cheerio = require('cheerio')
-  , glob = require('glob')
-  , request = require('request')
-
-  , rimraf = require('rimraf')
-  , _ = require('lodash')
-
-  , E = require('../utils/E.js')
-  , log = require('../utils/log.js')
-  , file = require('../utils/file.js')
-  , tell = require('../utils/tell.js')
-  , fingerprint = require('../utils/fingerprint.js')
-  , wwwHelpers = require('../utils/www-helpers.js');
+var E = require('../utils/E.js');
+var log = require('../utils/log.js');
+var file = require('../utils/file.js');
+var fingerprint = require('../utils/fingerprint.js');
+var wwwHelpers = require('../utils/www-helpers.js');
 
 // request.debug = true;
 

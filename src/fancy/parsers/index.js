@@ -1,9 +1,8 @@
-var fs = require('fs')
-  , path = require('path');
-
-var yaml = require('js-yaml')
-  , marked = require('marked')
-  , highlightJs = require('highlight.js');
+var fs = require('fs');
+var path = require('path');
+var yaml = require('js-yaml');
+var marked = require('marked');
+var highlightJs = require('highlight.js');
 
 marked.setOptions({
   highlight: function (code) {

@@ -1,21 +1,13 @@
 require('http').globalAgent.maxSockets = require('https').globalAgent.maxSockets = 20;
 
-var path = require('path')
-  , fs = require('fs');
-
-var rimraf = require('rimraf')
-  , mkdirp = require('mkdirp')
-  , ncp = require('ncp').ncp
-  , async = require('async');
+var path = require('path');
+var ncp = require('ncp').ncp;
+var async = require('async');
 
 ncp.stopOnError = true;
 
-var Entities = require('html-entities').XmlEntities;
-var entities = new Entities();
-
 var utils = require('../shared/utils.js');
-var E = require('../../utils/E.js')
-  , log = require('../../utils/log.js');
+var log = require('../../utils/log.js');
 
 // <RoutingRules>
 //   <RoutingRule>

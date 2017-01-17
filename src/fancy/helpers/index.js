@@ -1,9 +1,8 @@
 var fs = require('fs');
-
-var S = require('string')
-  , ejs = require('ejs')
-  , uriTemplates = require('uri-templates')
-  , urlPattern = require('url-pattern');
+var S = require('string');
+var ejs = require('ejs');
+var uriTemplates = require('uri-templates');
+var urlPattern = require('url-pattern');
 
 var objectUtil = require('../../utils/object.js');
 

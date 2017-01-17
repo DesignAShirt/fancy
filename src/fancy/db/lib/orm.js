@@ -1,5 +1,3 @@
-var fs = require('fs');
-
 var Sequelize = require('sequelize');
 
 var sequelize = new Sequelize(null, null, null, {

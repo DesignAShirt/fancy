@@ -2,8 +2,8 @@ var yargs = require('yargs');
 
 var commands = require('./commands/index');
 
-var cmdName = process.argv[2]
-  , cmd = commands[cmdName];
+var cmdName = process.argv[2];
+var cmd = commands[cmdName];
 
 if (cmd) {
   cmd(yargs);

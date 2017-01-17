@@ -1,16 +1,14 @@
-var path = require('path')
-  , fs = require('fs');
+var path = require('path');
+var fs = require('fs');
 
-var rimraf = require('rimraf')
-  , mkdirp = require('mkdirp')
-  , ncp = require('ncp').ncp
-  , async = require('async');
+var ncp = require('ncp').ncp;
+var async = require('async');
 
 ncp.stopOnError = true;
 
 var utils = require('../shared/utils.js');
-var E = require('../../utils/E.js')
-  , log = require('../../utils/log.js');
+var E = require('../../utils/E.js');
+var log = require('../../utils/log.js');
 
 var template = require('./templates/_package.json');
 
