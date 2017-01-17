@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = function(ctx) {
   var theme = {
     uppercase: function(str) {

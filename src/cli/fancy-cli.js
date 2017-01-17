@@ -1,3 +1,5 @@
+"use strict";
+
 var yargs = require('yargs');
 
 var commands = require('./commands/index');

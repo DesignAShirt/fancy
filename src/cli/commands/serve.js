@@ -1,3 +1,5 @@
+"use strict";
+
 var Fancy = require('../../fancy/index');
 var help = require('../../utils/help');
 

@@ -1,3 +1,5 @@
+"use strict";
+
 var inquirer = require('inquirer');
 var extfs = require('extfs');
 

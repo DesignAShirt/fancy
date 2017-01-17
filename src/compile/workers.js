@@ -1,3 +1,5 @@
+"use strict";
+
 var request = require('request');
 
 var cache = require('../fancy/index.js').cache;

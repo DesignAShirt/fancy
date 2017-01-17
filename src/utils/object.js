@@ -1,3 +1,5 @@
+"use strict";
+
 var opts = require('./options.js');
 
 function keyEscape(str) {

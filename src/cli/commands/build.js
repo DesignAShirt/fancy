@@ -1,3 +1,5 @@
+"use strict";
+
 var portfinder = require('portfinder');
 
 portfinder.basePort = 3000;

@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = {
   extend: function(passed, defaults) {
     var options = Object.create(defaults);

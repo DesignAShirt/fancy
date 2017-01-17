@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = function(target) {
   return {
     forEach: function(callback) {

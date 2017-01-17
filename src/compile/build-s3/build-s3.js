@@ -1,3 +1,5 @@
+"use strict";
+
 require('http').globalAgent.maxSockets = require('https').globalAgent.maxSockets = 20;
 
 var path = require('path');

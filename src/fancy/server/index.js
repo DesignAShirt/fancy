@@ -1,12 +1,10 @@
+"use strict";
+
 var path = require('path');
 var express = require('express');
 var logger = require('morgan');
 var glob = require('glob');
 var cluster = require('cluster');
-
-process.on('uncaughtException', function(err) {
-  console.error('Error', err.stack);
-});
 
 // FIXME: callback -> ready event
 

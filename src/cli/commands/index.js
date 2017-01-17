@@ -1,3 +1,5 @@
+"use strict";
+
 var create = require('./create');
 var serve = require('./serve');
 var clean = require('./clean');

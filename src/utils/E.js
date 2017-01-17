@@ -1,3 +1,5 @@
+"use strict";
+
 // FIXME: callback.apply or not?  capture _this = this in wrapper?
 
 function slice(args) {

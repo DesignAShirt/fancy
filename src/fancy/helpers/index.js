@@ -1,3 +1,5 @@
+"use strict";
+
 var fs = require('fs');
 var S = require('string');
 var ejs = require('ejs');

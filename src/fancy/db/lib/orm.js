@@ -1,3 +1,5 @@
+"use strict";
+
 var Sequelize = require('sequelize');
 
 var sequelize = new Sequelize(null, null, null, {
