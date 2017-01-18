@@ -37,12 +37,10 @@ var formats = {
 
 function detectFormat(f) {
   var ext = path.extname(f);
-  if (ext.length > 0) {
+  if (ext.length > 0)
     return ext.substr(1);
-  }
-  else {
+  else
     return '';
-  }
 }
 
 function parse(relativePath, callback) {
@@ -50,9 +48,9 @@ function parse(relativePath, callback) {
 
   // TODO: replace with streams
   fs.readFile(relativePath, function(err, contents) {
-    if (err) {
+    if (err)
       return callback(err);
-    }
+
     // console.log('parsing', relativePath, format);
     formats[format](contents, callback);
   });

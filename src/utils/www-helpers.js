@@ -23,12 +23,11 @@ var helpers = module.exports = {
   loadGlobals: function(globals) {
     var obj = null;
     if (globals) {
-      if (typeof globals === 'string' && globals.trim()[0] === '{') {
+      if (typeof globals === 'string' && globals.trim()[0] === '{')
         obj = JSON.parse(globals);
-      }
-      else if (fs.existsSync(globals)) {
+      else if (fs.existsSync(globals))
         obj = require(globals);
-      }
+
     }
     return obj || {};
   },
@@ -36,10 +35,10 @@ var helpers = module.exports = {
   buildRequest: function(req) {
     var parsedUrl = url.parse(req.url, true);
     return {
-        url: req.url
-      , params: {}
-      , query: parsedUrl.query
-      , locale: req.locale || 'en-US' // TODO: extract locale from request
+      url: req.url,
+      params: {},
+      query: parsedUrl.query,
+      locale: req.locale || 'en-US' // TODO: extract locale from request
     };
   },
 
@@ -64,17 +63,15 @@ var helpers = module.exports = {
       logger.debug({ url: req.url, redirect: properties['redirect'][0] }, 'data redirect (perm)');
       res.redirect(301, properties['redirect'][0]);
       return true;
-    }
-    else if (properties['temporary-redirect']) {
+    } else if (properties['temporary-redirect']) {
       logger.debug({ url: req.url, redirect: properties['temporary-redirect'][0] }, 'data redirect (temp)');
       res.redirect(302, properties['temporary-redirect'][0]);
       return true;
-    }
-    else if (properties['route-redirect']) {
+    } else if (properties['route-redirect']) {
       logger.trace({ url: req.url, list: properties['route-redirect'] }, 'route redirects found');
       for (var i=0; i < properties['route-redirect'].length; i++) {
-        var routeRedirect = properties['route-redirect'][i]
-          , re = new RegExp(routeRedirect);
+        var routeRedirect = properties['route-redirect'][i];
+        var re = new RegExp(routeRedirect);
         if (routeRedirect === req.url || re.test(req.url)) {
           logger.debug({ url: req.url, redirect: routeRedirect, redirect: properties['route'][0] }, 'route redirect');
           res.redirect(301, properties['route'][0]);
@@ -89,12 +86,11 @@ var helpers = module.exports = {
   usingResolver: function(sock) {
     return function usingResolver(using, taskCallback) {
       var obj = { key: using.key };
-      if (typeof using.value === 'function') {
+      if (typeof using.value === 'function')
         obj.fn = using.value.toString();
-      }
-      else {
+      else
         obj.value = using.value;
-      }
+
       sock.send('matching', obj, function(data) {
         using.result.retrieved = data.pages;
         taskCallback();
@@ -103,8 +99,8 @@ var helpers = module.exports = {
   },
 
   gatherAssets: function(assetPaths, extensions, unlimited) {
-    var allAssets = []
-      , uniqueRelativeAssets = [];
+    var allAssets = [];
+    var uniqueRelativeAssets = [];
     for (var i=0; i < assetPaths.length; i++) {
       var assetPath = path.normalize(assetPaths[i]);
       // extension whitelist not supported in 0.0.*
@@ -112,15 +108,14 @@ var helpers = module.exports = {
       var pattern = unlimited && assetPath.indexOf(unlimited) > -1 ? '/**/*.*' : '/**/*.*';
       var search = path.join(assetPath, pattern);
       glob.sync(search, { nodir: true }).forEach(function(element) {
-        if (IS_WIN) { // glob returns forward slashes on windows?
+        if (IS_WIN) // glob returns forward slashes on windows?
           element = path.normalize(element);
-        }
-        var rel = element.split(assetPath)[1]
-          , item = { abs: element, rel: rel, collision: null };
+
+        var rel = element.split(assetPath)[1];
+        var item = { abs: element, rel: rel, collision: null };
         if (uniqueRelativeAssets.indexOf(rel) > -1) {
           item.collision = true;
-        }
-        else {
+        } else {
           item.collision = false;
           uniqueRelativeAssets.push(rel);
         }

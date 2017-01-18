@@ -110,14 +110,13 @@ Compile.prototype.onReady = function(callback) {
   logger.debug('on ready options', options);
 
   function moveAsset(src, dest, done) {
-    var destDir = path.dirname(dest)
-      , _logger = logger.child({ source: src, destination: dest });
+    var destDir = path.dirname(dest);
+    var _logger = logger.child({ source: src, destination: dest });
     fs.exists(dest, function(yes) {
       if (yes) {
         _logger.trace({ exists: yes }, 'skipping');
         done();
-      }
-      else {
+      } else {
         _logger.trace({ directory: destDir }, 'mkdirp');
         mkdirp(destDir, E.bubbles(done, function() {
           var copy = fs.createReadStream(src)
@@ -132,14 +131,14 @@ Compile.prototype.onReady = function(callback) {
   }
 
   function removeExpiredFiles(dest, dictionary) {
-    var keys = Object.keys(dictionary)
-      , compiled = fs.readdirSync(dest);
+    var keys = Object.keys(dictionary);
+    var compiled = fs.readdirSync(dest);
 
     logger.debug({ directory: dest }, 'removing expired assets');
 
     for (var i=0; i < compiled.length;i ++) {
-      var item = compiled[i]
-        , f = path.join(dest, item);
+      var item = compiled[i];
+      var f = path.join(dest, item);
       if (item !== 'index.json' && fs.statSync(f).isFile() && keys.indexOf(item) < 0) {
         logger.trace({ path: f, target: item }, 'removing expired asset');
         fs.unlinkSync(f);
@@ -186,17 +185,16 @@ Compile.prototype.onReady = function(callback) {
     logger.info({ target: destinationAssetsPath }, 'cleaning up compiled assets');
     rimraf(destinationAssetsPath, E.bubbles(taskCallback, function() {
       if (allAssets.length) {
-        var uniqueAssets = _.where(allAssets, { collision: false })
-          , assetMoveTasks = uniqueAssets.map(function(element) {
-              logger.trace({ path: destinationAssetsPath, element: element }, 'generating move task');
-              return async.apply(moveAsset, element.abs, path.join(destinationAssetsPath, element.rel));
-            });
+        var uniqueAssets = _.where(allAssets, { collision: false });
+        var assetMoveTasks = uniqueAssets.map(function(element) {
+          logger.trace({ path: destinationAssetsPath, element: element }, 'generating move task');
+          return async.apply(moveAsset, element.abs, path.join(destinationAssetsPath, element.rel));
+        });
         async.parallelLimit(assetMoveTasks, 32, E.bubbles(taskCallback, function() {
           logger.info({ list: _.pluck(uniqueAssets, 'abs'), destination: destinationAssetsPath }, 'assets moved');
           taskCallback();
         }));
-      }
-      else {
+      } else {
         taskCallback();
       }
     }));
@@ -212,8 +210,7 @@ Compile.prototype.onReady = function(callback) {
       var utils = helpers({}, _this.fancy);
       if ('false' === page.getProperty('compile').toString()) { // if compile set to false, don't include it in compilation
         logger.trace({ file: relativePath }, 'skipping no compile');
-      }
-      else {
+      } else {
         var pageHash = page.toTemplateObject();
         // create a page for each route
         var routes = Array.isArray(pageHash.route) ? pageHash.route : [ pageHash.route ];
@@ -247,14 +244,14 @@ Compile.prototype.onReady = function(callback) {
         return;
       }
       alreadyCrawled.push(task.route);
-      var hashName = fingerprint.sync(task.route)
-        , destination = path.join(options.target, hashName);
+      var hashName = fingerprint.sync(task.route);
+      var destination = path.join(options.target, hashName);
       var result = dictionary[hashName] = {
-          url: task.route
-        , resource: task.resource || 'missing:'
-        , status: -1
-        , fingerprint: null
-        , location: null
+        url: task.route,
+        resource: task.resource || 'missing:',
+        status: -1,
+        fingerprint: null,
+        location: null
       };
       logger.debug('\t-> Processing "%s" and writing to %s', task.route, destination);
       // TODO: if strict and non-200 status returned, error
@@ -296,8 +293,7 @@ Compile.prototype.onReady = function(callback) {
   async.parallel(compilationTasks, function(err) {
     if (err) {
       logger.error({ err: err }, 'compilation task error');
-      callback(err);
-      return;
+      return void callback(err);
     }
     logger.info('compile complete');
     callback();
@@ -344,9 +340,9 @@ Compile.prototype.enqueueUrl = function(route) {
 };
 
 Compile.prototype.addResource = function(route, contents, callback) {
-  if (!route) {
+  if (!route)
     log.error({ route: route }, 'Invalid route passed');
-  }
+
   var hash = crypto.createHash('sha1').update(route || '').digest('hex');
   this.index[hash] = route;
   var writable = fs.createWriteStream(path.join(this.destination, hash));

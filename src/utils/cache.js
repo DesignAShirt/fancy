@@ -21,18 +21,17 @@ var cache = {
     if (void 0 !== val) {
       // console.log('\t-> writing %j', val);
       fs.writeFile(cachePath, JSON.stringify(val), callback);
-    }
-    else {
+    } else {
       // console.log('\t-> reading');
       fs.exists(cachePath, function(exists) {
         // console.log('\t\t-> exists? ', exists);
-        if (!exists) {
+        if (!exists)
           return callback(null);
-        }
+
         fs.readFile(cachePath, function(err, data) {
-          if (err) {
+          if (err)
             return callback(err);
-          }
+
           // console.log('\t\t\t-> file read Byte Length', data.byteLength);
           callback(null, JSON.parse(data));
         });

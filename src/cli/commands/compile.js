@@ -23,17 +23,15 @@ module.exports = function(yargs) {
 
   process.env.NODE_ENV = 'production';
 
-  var port = 3000
-    , dir = '.';
+  var port = 3000;
+  var dir = '.';
   switch (argv._.length) {
     case 2:
       var arg1 = parseInt(argv._[1], 10);
-      if (isNaN(arg1)) {
+      if (isNaN(arg1))
         dir = argv._[1];
-      }
-      else {
+      else
         port = arg1;
-      }
     break;
 
     case 3:

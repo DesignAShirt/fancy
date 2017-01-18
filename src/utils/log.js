@@ -14,17 +14,14 @@ var argv = require('yargs')
     }
   }).argv;
 
-var streams = [
-  {
-      level: 'warn'
-    , type: 'raw'
-    , stream: prettyStdOut
-  },
-  {
-      level: 'error'
-    , path: './fancy-error.log'
-  }
-];
+var streams = [{
+  level: 'warn',
+  type: 'raw',
+  stream: prettyStdOut
+}, {
+  level: 'error',
+  path: './fancy-error.log'
+}];
 
 var logger = bunyan.createLogger({
   name: 'fancy',
@@ -35,11 +32,15 @@ var logger = bunyan.createLogger({
     res: bunyan.stdSerializers.res,
     err: bunyan.stdSerializers.err,
     site: function site(site) {
-      if (!site) return site;
+      if (!site)
+        return site;
+
       return site.dataPath;
     },
     properties: function properties(properties) {
-      if (!properties) return properties;
+      if (!properties)
+        return properties;
+
       return {
         path: properties.relativePath,
         id: properties.getProperty('id'),
@@ -47,7 +48,9 @@ var logger = bunyan.createLogger({
       };
     },
     diskItem: function item(item) {
-      if (!item) return item;
+      if (!item)
+        return item;
+
       return {
         path: item.path,
         revision: item.revision,
@@ -55,7 +58,8 @@ var logger = bunyan.createLogger({
       };
     },
     list: function list(list) {
-      if (!list || !Array.isArray(list)) return list;
+      if (!list || !Array.isArray(list))
+        return list;
       return list.length + ' item(s)\n\t' + list.join('\n\t');
     }
   }

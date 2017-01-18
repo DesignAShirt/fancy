@@ -7,21 +7,21 @@ var build = require('./build');
 var compile = require('./compile');
 
 var cmds = {
-    create: create
-  , 'new': create
+  create: create,
+  'new': create,
 
-  , clean: clean
+  clean: clean,
 
-  , serve: serve
-  , server: serve
-  , start: serve
-  , test: serve
+  serve: serve,
+  server: serve,
+  start: serve,
+  test: serve,
 
-  , compile: compile
-  , make: compile
-  , generate: compile
+  compile: compile,
+  make: compile,
+  generate: compile,
 
-  , build: build
+  build: build
 };
 
 module.exports = cmds;

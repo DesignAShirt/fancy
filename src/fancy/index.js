@@ -20,26 +20,24 @@ function Fancy(options) {
   options = options || {};
   // defaults
   this.options = {
-      theme: null
-    , port: 3000
-    // , contentDirectories: [] // TODO: this is going to change so disabling use for now
-    , providers: []
-    , extensions: []
-    , buildRoutes: []
-    , strictMode: true
-      // FIXME: cluster concurrency is poorly structured but seemingly works
-    , concurrency: 0 // require('os').cpus().length
-    , onRouteDiscovered: function(url, exists, relativePath){}
-    , logDiscoveredRoutes: false
+    theme: null,
+    port: 3000,
+    //  contentDirectories: [], // TODO: this is going to change so disabling use for now
+    providers: [],
+    extensions: [],
+    buildRoutes: [],
+    strictMode: true,
+    // FIXME: cluster concurrency is poorly structured but seemingly works
+    concurrency: 0, // require('os').cpus().length
+    onRouteDiscovered: function(url, exists, relativePath){},
+    logDiscoveredRoutes: false
   };
   // load options
   for (var k in options) {
-    if (k in this.options) {
+    if (k in this.options)
       this.options[k] = options[k];
-    }
-    else {
+    else
       throw new Error('Invalid fancy option: ' + k);
-    }
   }
 
   console.log('Loading site config.yml...');
@@ -53,21 +51,19 @@ function Fancy(options) {
   }
   console.log('Done loading site config.yml');
 
-  if (!this.options.theme) {
+  if (!this.options.theme)
     throw new Error('Fancy: A theme is required but none was specified');
-  }
 
   // other properties
   this.knownRoutes = [];
 
   this.theme = {
-      views: path.join(process.cwd(), './themes/' + this.options.theme + '/views')
-    , supportPath: path.join(process.cwd(), './themes/' + this.options.theme + '/support/theme.js')
-    , support: null
+    views: path.join(process.cwd(), './themes/' + this.options.theme + '/views'),
+    supportPath: path.join(process.cwd(), './themes/' + this.options.theme + '/support/theme.js'),
+    support: null
   }
-  if (fs.existsSync(this.theme.supportPath)) {
+  if (fs.existsSync(this.theme.supportPath))
     this.theme.support = require(this.theme.supportPath);
-  }
 
   this.server = null;
   this.db = null;
@@ -90,8 +86,7 @@ function Fancy(options) {
     if (fs.existsSync(extensionPath)) {
       // console.log('Loading extension %s...', extensionPath);
       this.extensions[extensionName] = require(extensionPath);
-    }
-    else {
+    } else {
       console.warn('Warning: Unable to load extension %s', extensionPath);
     }
   }
@@ -99,15 +94,15 @@ function Fancy(options) {
 }
 
 Fancy.prototype.init = function(callback) {
-  var _this = this
-    , tasks = [];
+  var _this = this;
+  var tasks = [];
 
   tasks.push(function(taskCallback) {
     var notifier = help.notifier('Loading web server');
     server(_this, function(err) {
-      if (err) {
+      if (err)
         return taskCallback(err);
-      }
+
       notifier.done();
       taskCallback(null);
     });
@@ -120,15 +115,14 @@ Fancy.prototype.init = function(callback) {
       if (fs.existsSync(providerPath)) {
         // console.log('Loading provider %s...', providerPath);
         _this.db.providers.push(require(providerPath)); // TODO: move paths someplace configurable
-      }
-      else {
+      } else {
         console.warn('Warning: Unable to load provider %s', providerPath);
       }
     });
     _this.db.init(function(err, db) {
-      if (err) {
+      if (err)
         return taskCallback(err);
-      }
+
       taskCallback(null);
     });
   });
@@ -137,9 +131,9 @@ Fancy.prototype.init = function(callback) {
   tasks.push(function(taskCallback) {
     var notifier = help.notifier('Site constants');
     glob('./data/constants/**/*.@(yml|json)', function(err, matches) {
-      if (err) {
+      if (err)
         return callback(err);
-      }
+
       matches.forEach(function(relativePath) {
         switch (path.extname(relativePath)) {
           case '.yml':
@@ -161,9 +155,9 @@ Fancy.prototype.init = function(callback) {
   });
 
   async.parallelLimit(tasks, 2, function(err) {
-    if (err) {
+    if (err)
       return callback(err);
-    }
+
     console.log('Fancy initialized and listening on port %d', _this.options.port);
     callback.call(_this, null);
   });
@@ -173,9 +167,8 @@ Fancy.prototype.routeDiscovered = function(url, relativePath) {
   var exists = this.knownRoutes.indexOf(url) > -1;
   if (!exists) {
     this.knownRoutes.push(url);
-    if (this.options.logDiscoveredRoutes) {
+    if (this.options.logDiscoveredRoutes)
       console.log('\t-> Route Discovered: ', url);
-    }
   }
   this.options.onRouteDiscovered(url, exists, relativePath);
 };
@@ -194,9 +187,9 @@ Fancy.prototype.createResponse = function(url, page, params) {
   Object.defineProperty(res, 'fancy', { value: helpers(res, this), enumerable: true });
   Object.defineProperty(res, 'yield', { value: function(yieldUrl, decode) {
     var discovered = decode ? decodeURIComponent(yieldUrl) : yieldUrl;
-    if (discovered.length) {
+    if (discovered.length)
       _this.routeDiscovered(discovered, 'yield:' + url);
-    }
+
     return process.env.NODE_ENV === 'development' ? '<!-- yield: ' + discovered + ' -->' : '';
   }, enumerable: true });
   Object.defineProperty(res, 'theme', { value: (_this.theme.support || function(){ return {}; })(res), enumerable: true });
@@ -216,8 +209,8 @@ Fancy.prototype.createResponse = function(url, page, params) {
   Object.defineProperty(res, 'page', { value: page, enumerable: true });
 
   var request = {
-      url: url
-    , params: params || {}
+    url: url,
+    params: params || {}
   };
   objectUtil.deepFreeze(request);
   Object.defineProperty(res, 'request', { value: request, enumerable: true });
@@ -229,12 +222,12 @@ Fancy.prototype.createResponse = function(url, page, params) {
   Object.defineProperty(res, 'env', { value: env, enumerable: true });
 
   _this._responseCache.site = _this._responseCache.site || objectUtil.flatten({
-      pages: Object.keys(_this.db.pages).map(function(item) {
-        return _this.db.pages[item].toTemplateObject();
-      })
-    , resources: _this.getResourcesForTemplate()
-    , meta: _this.getMetaForTemplate()
-    , relationships: _this.getRelationshipsForTemplate()
+    pages: Object.keys(_this.db.pages).map(function(item) {
+      return _this.db.pages[item].toTemplateObject();
+    }),
+    resources: _this.getResourcesForTemplate(),
+    meta: _this.getMetaForTemplate(),
+    relationships: _this.getRelationshipsForTemplate()
   });
   Object.defineProperty(res, 'site', { value: _this._responseCache.site, enumerable: true });
 
@@ -321,22 +314,22 @@ Fancy.prototype._reduceMatchingRoutes = function(pages) {
     console.log('Multiple matching pages:', pages);
     throw new Error('Strict Mode: Multiple pages match url, with none marked preferred');
   }
-  if (!preferredPages.length) preferredPages = pages;
+  if (!preferredPages.length)
+    preferredPages = pages;
 
   var nonproviderPages = preferredPages.filter(function(page) {
     // console.log('\t-> Page %s is not provider? %s', page.relativePath, 0 !== page.relativePath.indexOf('provider:'));
     return page && 0 !== page.relativePath.indexOf('provider:');
   });
-  if (!nonproviderPages.length) nonproviderPages = preferredPages;
+  if (!nonproviderPages.length)
+    nonproviderPages = preferredPages;
 
   // console.log('\t-> Matches: ', nonproviderPages.length);
 
-  if (nonproviderPages.length) {
+  if (nonproviderPages.length)
     return nonproviderPages[0];
-  }
-  else {
+  else
     return null;
-  }
 };
 
 // returns response object via callback
@@ -345,9 +338,8 @@ Fancy.prototype.requestPage = function(url, callback) {
   var _this = this;
 
   _this.db.findPageByRoute(url, function(err, pages) {
-    if (err) {
+    if (err)
       return callback(err);
-    }
 
     var templateMatchParams = {};
     if (!pages.length) { // no direct match found.  urlPattern matching
@@ -380,12 +372,11 @@ Fancy.prototype.requestPage = function(url, callback) {
       // console.log('\t-> %s found pages', pages.length);
       var reducedPage = _this._reduceMatchingRoutes(pages);
       if (reducedPage) {
-        callback(null, {
-            page: reducedPage
-          , layout: reducedPage.layout || 'primary'
-          , res: _this.createResponse(url, reducedPage, templateMatchParams[reducedPage.relativePath])
+        return void callback(null, {
+          page: reducedPage,
+          layout: reducedPage.layout || 'primary',
+          res: _this.createResponse(url, reducedPage, templateMatchParams[reducedPage.relativePath])
         });
-        return;
       }
     }
 

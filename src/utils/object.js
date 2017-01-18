@@ -11,9 +11,8 @@ function keyInsensitive(obj, key) {
     key = key.toLowerCase();
     obj = obj || {};
     for (var k in obj) {
-      if (k.toLowerCase() == key) {
+      if (k.toLowerCase() == key)
         return obj[k];
-      }
     }
   }
   return;
@@ -50,52 +49,50 @@ module.exports = {
       freeze: true,
       valueHandler: null // function(value, flattenedKey, key, parentObject) { return value }
     });
-    if (!options) {
+    if (!options)
       throw new Error('Invalid options passed');
-    }
-    if (toString.call(obj) !== '[object Object]') {
+
+    if (toString.call(obj) !== '[object Object]')
       return obj;
-    }
-    var objs = [ [options.keyPrefix, obj] ]
-      , ret = {}
-      , resource;
+
+    var objs = [[options.keyPrefix, obj]];
+    var ret = {};
+    var resource;
     while (objs.length && --options.maximumObjects) {
       resource = objs.shift();
       for (var k in resource[1]) {
-        var subKey = options.keyTransformStrategy.call(k)
-          , childKey = (resource[0] ? [resource[0], subKey] : [subKey]).join(options.separator)
-          , childObj = resource[1][k]
-          , childType = toString.call(childObj);
-        if (!options.allowSeparatorInKey && subKey.indexOf(options.separator) > -1) {
+        var subKey = options.keyTransformStrategy.call(k);
+        var childKey = (resource[0] ? [resource[0], subKey] : [subKey]).join(options.separator);
+        var childObj = resource[1][k];
+        var childType = toString.call(childObj);
+        if (!options.allowSeparatorInKey && subKey.indexOf(options.separator) > -1)
           throw new Error('Flatten Object: Child key "' + childKey + '" contains separator "' + options.separator + '"');
-        }
+
         if (childType === '[object Object]' || (!options.skipArrays && childType === '[object Array]')) {
           objs.push([ childKey, childObj ]);
-        }
-        else {
+        } else {
           if (options.skipArrays && childType === '[object Array]') {
-            if (options.cloneArrays) {
+            if (options.cloneArrays)
               childObj = childObj.slice();
-            }
-            if (options.freeze) {
+
+            if (options.freeze)
               Object.freeze(childObj);
-            }
           }
           ret[childKey] = options.valueHandler ? options.valueHandler(childObj, childKey, k, resource[1]) : childObj;
         }
       }
     }
-    if (options.freeze) {
+    if (options.freeze)
       Object.freeze(ret);
-    }
+
     return ret;
   },
 
   retrieve: function(obj, k) {
     var ret;
     if (k.trim().length) {
-      var parts = k.split('.')
-        , lookup = 'obj';
+      var parts = k.split('.');
+      var lookup = 'obj';
 
       for (var i=0; i< parts.length; i++) {
         lookup = 'keyInsensitive(' + lookup + ', "' + keyEscape(parts[i]) + '")';

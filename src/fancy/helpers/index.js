@@ -19,8 +19,7 @@ var utils = {
     if (obj) {
       var k = Object.keys(obj)[0];
       callback(k, obj[k]);
-    }
-    else {
+    } else {
       callback();
     }
   },
@@ -53,51 +52,43 @@ var filters = {
 
 function filterAndSort(ret, filterFn, sorterFn) {
   ret = ret || [];
-  if (filterFn) {
+  if (filterFn)
     ret = ret.filter(filterFn);
-  }
-  if (sorterFn) {
+
+  if (sorterFn)
     ret.sort(sorterFn);
-  }
+
   return ret;
 }
 
 function valueToText(val) {
-  var ret;
-  if (null === val || void 0 === val) {
-    ret = '';
-  }
-  else if (typeof val === 'object' && 'length' in val) {
-    ret = val.join(', ');
-  }
-  else if (val.toString) {
-    ret = val.toString();
-  }
-  return ret;
+  if (null === val || void 0 === val)
+    return '';
+  else if (typeof val === 'object' && 'length' in val)
+    return val.join(', ');
+  else if (val.toString)
+    return val.toString();
 }
 
 function valueToFirst(val) {
   var ret = val;
 
-  if (typeof val === 'object' && 'length' in val) {
+  if (typeof val === 'object' && 'length' in val)
     ret = val[0];
-  }
 
-  if (null === ret || void 0 === ret) {
+  if (null === ret || void 0 === ret)
     return '';
-  }
-  else {
+  else
     return ret.toString();
-  }
 }
 
 var helpers = function(ctx, fancy) {
   var core = {
     find: function(id) {
       var ret = core.value('site.relationships.id.' + id);
-      if (toString.call(ret) === '[object Array]' && 1 === ret.length) {
+      if (toString.call(ret) === '[object Array]' && 1 === ret.length)
         ret = ret[0];
-      }
+
       // console.log('fancy.find(%s): %j', id, ret);
       return ret;
     },
@@ -113,15 +104,13 @@ var helpers = function(ctx, fancy) {
       if (page) {
         page = core.wrap(page);
         templateUrl = page.first('urlTemplate');
-      }
-      else {
+      } else {
         page = core.value('page', {});
         templateUrl = core.first('page.urlTemplate');
       }
 
-      if (!templateUrl.length) {
+      if (!templateUrl.length)
         return page ? page.first('route') : core.value('request.url');
-      }
 
       var templateValues = core.value('request.params', {});
       for (var k in mergeVals) {
@@ -144,9 +133,8 @@ var helpers = function(ctx, fancy) {
     },
 
     wrap: function(obj) {
-      if (!obj || typeof obj !== 'object' || obj.__wrapped) {
+      if (!obj || typeof obj !== 'object' || obj.__wrapped)
         return obj;
-      }
 
       var content = {};
 
@@ -156,12 +144,10 @@ var helpers = function(ctx, fancy) {
         ret = void 0 === ret ? defaultValue : ret;
 
         var retType = toString.call(ret);
-        if (retType === '[object Object]') {
+        if (retType === '[object Object]')
           ret = core.wrap(ret);
-        }
-        else if (retType === '[object Array]') {
+        else if (retType === '[object Array]')
           ret = ret.map(core.wrap);
-        }
 
         return ret;
       }});
@@ -185,9 +171,9 @@ var helpers = function(ctx, fancy) {
       var res = fancy.createResponse(ctx.request.url, vals.page || ctx.page, ctx.request.params);
       assignIn(res, vals);
       // console.log('partial scope', res);
-      if (!/\.ejs$/i.test(view)) {
+      if (!/\.ejs$/i.test(view))
         view += '.ejs';
-      }
+
       var viewPath = fancy.getView(ctx.page.layout, view);
       var contents = fs.readFileSync(viewPath).toString();
       return ejs.render(contents, {
@@ -200,29 +186,25 @@ var helpers = function(ctx, fancy) {
       var ret;
       if (k.trim().length) {
         if (k.indexOf('.') > -1) {
-          var parts = k.toLowerCase().split('.')
-            , ns = parts.shift();
+          var parts = k.toLowerCase().split('.');
+          var ns = parts.shift();
           ret = (ctx[ns] || {})[parts.join('.')];
           if (void 0 === ret) {
-            var lowest = ctx[ns]
-              , search = [];
+            var lowest = ctx[ns];
+            var search = [];
             if (lowest) {
               for (var i=0; i < parts.length; i++) {
-                if (void 0 !== lowest[parts[i]]) {
+                if (void 0 !== lowest[parts[i]])
                   lowest = lowest[parts[i]];
-                }
-                else {
+                else
                   search.push(parts[i]);
-                }
               }
               // console.log('value search', lowest, search);
-              if (lowest) {
+              if (lowest)
                 ret = search.length ? objectUtil.retrieve(lowest, search.join('.')) : lowest;
-              }
             }
           }
-        }
-        else { // if bare value, just return it (e.g. something passed by fancy.partial)
+        } else { // if bare value, just return it (e.g. something passed by fancy.partial)
           ret = objectUtil.retrieve(ctx, k);
         }
       }
@@ -233,8 +215,7 @@ var helpers = function(ctx, fancy) {
       // console.log('fancy.value(%s) -> %s', k, retType);
       if (retType === '[object Object]') {
         ret = core.wrap(ret);
-      }
-      else if (retType === '[object Array]') {
+      } else if (retType === '[object Array]') {
         // console.log('\t-> Wrapping');
         ret = ret.map(core.wrap);
       }
@@ -271,12 +252,10 @@ var helpers = function(ctx, fancy) {
       active: function(url, str, elseStr) {
         var ret;
         ret = urlPattern.newPattern(core.value('request.url')).match(url) ? str : elseStr || '';
-        if (typeof ret === 'function') {
+        if (typeof ret === 'function')
           ret();
-        }
-        else {
+        else
           return ret;
-        }
       },
 
       // matches: function(url, str, elseStr) {

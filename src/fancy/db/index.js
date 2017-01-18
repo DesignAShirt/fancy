@@ -117,9 +117,9 @@ FancyDb.prototype._watchFilesWin = function(contentDirectory, callback) {
       relativePath = help.getContentDirectoryPath(relativePath);
       if (_this.isValidFile(relativePath)) {
         _this.addFile(relativePath, function(err) {
-          if (err) {
+          if (err)
             throw err;
-          }
+
           _this.dataChangedHandler(relativePath);
         });
       }
@@ -167,9 +167,9 @@ FancyDb.prototype.findPageByProperty = function(propertyName, propertyValue, cal
 FancyDb.prototype.findPageByRoute = function(propertyValue, callback) {
   var _this = this;
   _this.findPageByProperty('route', propertyValue, function(err, pages) {
-    if (err) {
+    if (err)
       return callback(err);
-    }
+
     callback(null, pages.filter(function(element) { return !!element; }));
     // FIXME: turn properties back on when db is improved
 
@@ -199,8 +199,8 @@ FancyDb.prototype.getPage = function(relativePath) {
 };
 
 FancyDb.prototype.createPage = function(relativePath, properties, callback) {
-  var _this = this
-    , page = new FancyPage(relativePath);
+  var _this = this;
+  var page = new FancyPage(relativePath);
   _this.pages[relativePath] = page;
   page.init(properties, function(err) {
     _this._pagesCompleted++;
@@ -218,14 +218,13 @@ FancyDb.prototype.createPage = function(relativePath, properties, callback) {
 
 FancyDb.prototype._addResourceSync = function(page) {
   // console.log('\t\t-> (resource) %s.resource: %s', page.relativePath, page.resource);
-  if (!this.resources[page.resource]) {
+  if (!this.resources[page.resource])
     this.resources[page.resource] = [];
-  }
+
   if (this.resources[page.resource].indexOf(page) < 0) {
     // console.log('\t\t-> resource rel not found...');
     this.resources[page.resource].push(page);
-  }
-  else {
+  } else {
     // console.log('\t\t-> resource rel already exists');
   }
 };
@@ -247,12 +246,11 @@ FancyDb.prototype._addMetaSync = function(page) {
   for (var rel in properties) {
     // console.log('\t\t-> (meta) %s.%s: %s', page.relativePath, rel, rel == 'body' ? '[body]' : properties[rel]);
 
-    if (!this.meta[rel]) {
+    if (!this.meta[rel])
       this.meta[rel] = [];
-    }
-    if (this.meta[rel].indexOf(page) < 0) {
+
+    if (this.meta[rel].indexOf(page) < 0)
       this.meta[rel].push(page);
-    }
   }
 };
 
@@ -273,11 +271,9 @@ FancyDb.prototype._addRelationshipsSync = function(page) {
   for (var rel in properties) {
     var relValue = properties[rel];
     if (!!relValue && typeof relValue === 'object' && 'length' in relValue) {
-      for (var i=0; i < relValue.length; i++) {
+      for (var i=0; i < relValue.length; i++)
         this._addRelationshipSync(page, rel, relValue);
-      }
-    }
-    else {
+    } else {
       this._addRelationshipSync(page, rel, relValue);
     }
   }
@@ -298,24 +294,23 @@ FancyDb.prototype._removeRelationshipsSync = function(page) {
 };
 
 FancyDb.prototype._addRelationshipSync = function(page, rel, relValue) {
-  if (rel.toLowerCase() === 'body') { // skip body
+  if (rel.toLowerCase() === 'body') // skip body
     return;
-  }
+
   // console.log('\t\t-> (relationship) %s.%s: %s', page.relativePath, rel, rel == 'body' ? '[body]' : relValue);
-  if (!relValue || typeof relValue !== 'object' || !('length' in relValue)) {
+  if (!relValue || typeof relValue !== 'object' || !('length' in relValue))
     relValue = [relValue];
-  }
+
   for (var i=0; i < relValue.length; i++) {
     var val = relValue[i];
-    if (!this.relationships[rel]) {
+    if (!this.relationships[rel])
       this.relationships[rel] = {};
-    }
-    if (!this.relationships[rel][val]) {
+
+    if (!this.relationships[rel][val])
       this.relationships[rel][val] = [];
-    }
-    if (this.relationships[rel][val].indexOf(page) < 0) {
+
+    if (this.relationships[rel][val].indexOf(page) < 0)
       this.relationships[rel][val].push(page);
-    }
   }
 };
 
@@ -326,29 +321,26 @@ FancyDb.prototype.addFile = function(relativePath, properties, callback) {
     properties = null;
   }
   // console.log('Adding page file %s', relativePath);
-  var _this = this
-    , page = _this.getPage(relativePath);
+  var _this = this;
+  var page = _this.getPage(relativePath);
 
-  if (page) {
+  if (page)
     callback(null, page, true);
-  }
-  else {
+  else
     _this.createPage(relativePath, properties, callback);
-  }
 };
 
 FancyDb.prototype.removeFile = function(relativePath, callback) {
   // console.log('Removing page file %s', relativePath);
-  var _this = this
-    , page = _this.getPage(relativePath);
+  var _this = this;
+  var page = _this.getPage(relativePath);
   if (page) {
     _this._removeRelationshipsSync(page);
     _this._removeMetaSync(page);
     _this._removeResourceSync(page);
     delete _this.pages[relativePath];
     page.remove(callback);
-  }
-  else {
+  } else {
     callback(null);
   }
 };
@@ -356,16 +348,16 @@ FancyDb.prototype.removeFile = function(relativePath, callback) {
 FancyDb.prototype.reloadFile = function(relativePath, callback) {
   var _this = this;
   _this.removeFile(relativePath, function(err) {
-    if (err) {
+    if (err)
       return callback(err);
-    }
+
     _this.addFile(relativePath, callback);
   });
 };
 
 FancyDb.prototype.reload = function(callback) {
-  var _this = this
-    , tasks = [];
+  var _this = this;
+  var tasks = [];
   var notifier = help.notifier('Building pages');
   tasks.push(function(taskCallback) {
     _this._reloadFiles(taskCallback);
@@ -377,9 +369,9 @@ FancyDb.prototype.reload = function(callback) {
     notifier.update(_this._pagesCompleted / _this._pagesAdded);
   }, 500);
   async.parallel(tasks, function(err) {
-    if (err) {
+    if (err)
       return callback(err);
-    }
+
     notifier.done();
     callback(null);
   });
@@ -402,8 +394,8 @@ FancyDb.prototype.isValidFile = function(relativePath) {
 };
 
 FancyDb.prototype._reloadFiles = function(callback) {
-  var _this = this
-    , matches = [];
+  var _this = this;
+  var matches = [];
   // console.log('Reloading pages from disk...');
 
   for (var i=0; i < _this.contentDirectories.length; i++) {
@@ -412,8 +404,8 @@ FancyDb.prototype._reloadFiles = function(callback) {
     matches = matches.concat(glob.sync(path.normalize(contentDirectory + '/') + '/**/*.@(' + parsers.available.join('|') + ')'));
   }
 
-  var tasks = []
-    , totalFound = 0;
+  var tasks = [];
+  var totalFound = 0;
   matches.forEach(function(relativePath) {
     if (_this.isValidFile(relativePath)) {
       tasks.push(function(taskCallback) {
@@ -428,8 +420,8 @@ FancyDb.prototype._reloadFiles = function(callback) {
 
 FancyDb.prototype._reloadProviders = function(callback) {
   // console.log('Reloading pages from providers...');
-  var _this = this
-    , tasks = {};
+  var _this = this;
+  var tasks = {};
   _this.providers.forEach(function(provider) {
     // console.log('\t-> Found provider %s...', provider.name);
     tasks[provider.name] = function(taskCallback) {
@@ -441,21 +433,20 @@ FancyDb.prototype._reloadProviders = function(callback) {
     };
   });
   async.parallelLimit(tasks, 2, function(err, providerResources) {
-    if (err) {
+    if (err)
       return callback(err);
-    }
+
     var subtasks = [];
     Object.keys(providerResources).forEach(function(providerName) {
       var content = providerResources[providerName] || [];
       content.forEach(function(resource, index) {
         if (resource) {
           subtasks.push(function(subtaskCallback) {
-            var resId = 'id' in resource ? resource.id : index
-              , relativePath = PROVIDER_PREFIX + providerName + '/' + resId;
+            var resId = 'id' in resource ? resource.id : index;
+            var relativePath = PROVIDER_PREFIX + providerName + '/' + resId;
             _this.addFile(relativePath, resource, subtaskCallback);
           });
-        }
-        else {
+        } else {
           console.warn('Warning: Provider %s sent a null resource: %j', providerName, resource);
         }
       });

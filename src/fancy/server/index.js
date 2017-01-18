@@ -12,9 +12,8 @@ var cluster = require('cluster');
 module.exports = function(fancy, callback) {
   if (fancy.options.concurrency && cluster.isMaster) {
     function messageHandler(msg) {
-      if (msg.cmd && msg.cmd == 'routeDiscovered') {
+      if (msg.cmd && msg.cmd == 'routeDiscovered')
         fancy.routeDiscovered(msg.url);
-      }
     }
 
     for (var i = 0; i < fancy.options.concurrency; i++) {
@@ -70,31 +69,25 @@ module.exports = function(fancy, callback) {
       console.error(err);
       res.status(err.status || 500);
       res.render('layouts/error', fancy.createResponse(req.url, {
-          message: err.message
-        , error: err
-        , route: req.url
+        message: err.message,
+        error: err,
+        route: req.url
       }));
     }
 
     function renderPage(req, res, details, next) {
       fancy.routeDiscovered(req.url);
       var contentType = details.res.page.contentType || 'text/html';
-      if (contentType.indexOf(';') > -1) {
+      if (contentType.indexOf(';') > -1)
         contentType = contentType.split(';')[0].trim();
-      }
 
       if (contentType == 'application/json') {
-        res.json(details.res.page.body);
-        return;
-      }
-      else if (contentType == 'application/javascript') {
+        return void res.json(details.res.page.body);
+      } else if (contentType == 'application/javascript') {
         var jsVar = details.res.page.scopeTarget || 'window["' + req.url + '"]';
-        res.status(200).contentType('application/javascript').send(jsVar + ' = ' + JSON.stringify(details.res.page.body));
-        return;
-      }
-      else {
-        res.render('layouts/' + details.layout, details.res);
-        return;
+        return void res.status(200).contentType('application/javascript').send(jsVar + ' = ' + JSON.stringify(details.res.page.body));
+      } else {
+        return void res.render('layouts/' + details.layout, details.res);
       }
     }
 
@@ -110,14 +103,12 @@ module.exports = function(fancy, callback) {
           if (req.url.indexOf('?') > -1) { // has querystring?
             // drop it and try matching
             fancy.requestPage(req.url.split('?')[0], function(err, details) {
-              if (err) {
-                renderError(req, res, err);
-                return;
-              }
+              if (err)
+                return void renderError(req, res, err);
+
               renderPage(res, res, details, next);
             });
-          }
-          else {
+          } else {
             renderError(req, res, err);
           }
           return;

@@ -5,14 +5,11 @@ var path = require('path');
 
 var mkdirp = require('mkdirp');
 
+var retfalse = () => false;
 function tryLstat(targ) {
   try {
     return fs.lstatSync(targ);
-  }
-  catch (err) { // assuming not found
-    var retfalse = function() {
-      return false;
-    };
+  } catch (err) { // assuming not found
     return {
       isDirectory: retfalse,
       isFile: retfalse
@@ -31,9 +28,9 @@ module.exports = {
   getWorkingDirectory: function(targ) {
     targ = targ || '.';
     var workingDir = path.resolve('.' === targ ? process.cwd() : targ);
-    if (!fs.existsSync(targ)) {
+    if (!fs.existsSync(targ))
       mkdirp.sync(workingDir);
-    }
+
 
     // if (this.isDirectory(workingDir)) {
       return workingDir;
@@ -57,12 +54,10 @@ module.exports = {
 
   absoluteToRelative: function(absolutePath, cwd) {
     cwd = cwd || process.cwd();
-    if (0 === absolutePath.indexOf(cwd)) {
+    if (0 === absolutePath.indexOf(cwd))
       return path.normalize(absolutePath.substr(cwd.length)).substr(1);
-    }
-    else {
+    else
       throw new Error('Path does not match cwd: ' + cwd + ' => ' + absolutePath);
-    }
   },
 
   getContentDirectoryPath: function(filePath) {
@@ -74,12 +69,10 @@ module.exports = {
     var percent = 0;
     var gc = [];
     gc.push(setInterval(function() {
-      if (percent) {
+      if (percent)
         console.log('Still %s... %d\% complete', message, percent);
-      }
-      else {
+      else
         console.log('Still %s...', message);
-      }
     }, interval || 2000));
     return {
       add: function(fn, interval) {

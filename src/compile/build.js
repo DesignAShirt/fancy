@@ -20,15 +20,15 @@ module.exports = {
 
     var cwd = process.cwd();
 
-    var source = path.join(cwd, compileDestination)
-      , buildDestination = path.join(cwd, './.fancy/build')
-      , destination = path.join(buildDestination, '/')
-      , dist = path.join(cwd, options.output)
-      , sourceAssets = path.join(source, 'assets')
-      , destinationAssets = path.join(destination, '/')
-      , indexPath = path.join(source, 'index.json')
-      , ext = 'html'
-      , index;
+    var source = path.join(cwd, compileDestination);
+    var buildDestination = path.join(cwd, './.fancy/build');
+    var destination = path.join(buildDestination, '/');
+    var dist = path.join(cwd, options.output);
+    var sourceAssets = path.join(source, 'assets');
+    var destinationAssets = path.join(destination, '/');
+    var indexPath = path.join(source, 'index.json');
+    var ext = 'html';
+    var index;
 
     log.debug('initializing build', {
       source: source,
@@ -43,9 +43,8 @@ module.exports = {
 
     // TODO: if config.build.destination isn't "/", then all hrefs have to be rewritten
 
-    if (!fs.existsSync(indexPath)) {
+    if (!fs.existsSync(indexPath))
       throw new Error('No index.json file exists.  Please run compile first');
-    }
 
     index = require(indexPath);
 

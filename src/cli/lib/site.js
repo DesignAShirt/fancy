@@ -10,15 +10,15 @@ var help = require('../../utils/help.js');
 module.exports = {
   createDirectories: function(workingDir) {
     var dirs = {
-        cwd:        workingDir
-      , db:         help.createDirectory(workingDir, '.fancy/db')
-      , cache:      help.createDirectory(workingDir, '.fancy/cache')
-      , content:    help.createDirectory(workingDir, 'data/content')
-      , providers:  help.createDirectory(workingDir, 'data/providers')
-      , constants:  help.createDirectory(workingDir, 'data/constants')
-      , assets:     help.createDirectory(workingDir, 'data/assets')
-      , themes:     help.createDirectory(workingDir, 'themes/itworked')
-      , extensions: help.createDirectory(workingDir, 'extensions')
+      cwd:        workingDir,
+      db:         help.createDirectory(workingDir, '.fancy/db'),
+      cache:      help.createDirectory(workingDir, '.fancy/cache'),
+      content:    help.createDirectory(workingDir, 'data/content'),
+      providers:  help.createDirectory(workingDir, 'data/providers'),
+      constants:  help.createDirectory(workingDir, 'data/constants'),
+      assets:     help.createDirectory(workingDir, 'data/assets'),
+      themes:     help.createDirectory(workingDir, 'themes/itworked'),
+      extensions: help.createDirectory(workingDir, 'extensions')
     };
     return dirs;
   },
@@ -34,18 +34,14 @@ module.exports = {
       { location: 'config.yml', create: false, directory: false },
     ];
     for (var i=0; i< required.length; i++) {
-      var requirement = required[i]
-        , requiredPath = path.join(workingDir, requirement.location);
+      var requirement = required[i];
+      var requiredPath = path.join(workingDir, requirement.location);
+
       if (requirement.directory && help.isDirectory(requiredPath)) {
-
-      }
-      else if (!requirement.directory && help.isFile(requiredPath)) {
-
-      }
-      else if (requirement.directory && requirement.create) { // TODO: support file creation?
+      } else if (!requirement.directory && help.isFile(requiredPath)) {
+      } else if (requirement.directory && requirement.create) { // TODO: support file creation?
         help.createDirectory(workingDir, requirement.location);
-      }
-      else {
+      } else {
         throw new Error('Could not locate: ' + requiredPath);
       }
     }

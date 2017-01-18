@@ -13,30 +13,23 @@ var models = {};
 var Page = models.Page = sequelize.define('page', {
   path: {
     type: Sequelize.STRING,
-    validate: {
-      notEmpty: true
-    }
+    validate: { notEmpty: true }
   },
   fingerprint: {
     type: Sequelize.STRING,
-    validate: {
-      notEmpty: true
-    }
+    validate: { notEmpty: true }
   },
 }, {
-  indexes: [
-    {
-      name: 'fingerprint_index',
-      method: 'BTREE',
-      fields: ['fingerprint']
-    },
-    {
-      name: 'path_index',
-      unique: true,
-      method: 'BTREE',
-      fields: ['path']
-    }
-  ]
+  indexes: [{
+    name: 'fingerprint_index',
+    method: 'BTREE',
+    fields: ['fingerprint']
+  }, {
+    name: 'path_index',
+    unique: true,
+    method: 'BTREE',
+    fields: ['path']
+  }]
 });
 
 var Property = models.Property = sequelize.define('property', {
@@ -57,13 +50,11 @@ var Property = models.Property = sequelize.define('property', {
     }
   },
 }, {
-  indexes: [
-    {
-      name: 'propertyname_index',
-      method: 'BTREE',
-      fields: ['name']
-    }
-  ]
+  indexes: [{
+    name: 'propertyname_index',
+    method: 'BTREE',
+    fields: ['name']
+  }]
 });
 
 // FIXME: problem assigning a resource to multiple pages
@@ -96,6 +87,6 @@ Page.hasMany(Property);
 // Page.belongsTo(Resource);
 
 module.exports = {
-    sequelize: sequelize
-  , models: models
+  sequelize: sequelize,
+  models: models
 };

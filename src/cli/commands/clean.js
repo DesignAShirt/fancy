@@ -15,11 +15,11 @@ module.exports = function(yargs) {
     process.exit(-1);
   }
 
-  var subcmd = argv._[1].toLowerCase()
-    , dir = argv._[2] || '.';
+  var subcmd = argv._[1].toLowerCase();
+  var dir = argv._[2] || '.';
 
-  var cwd = help.getWorkingDirectory(dir)
-    , target;
+  var cwd = help.getWorkingDirectory(dir);
+  var target;
   switch (subcmd) {
     case 'cache':
       target = '.fancy/cache';

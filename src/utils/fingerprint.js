@@ -10,8 +10,8 @@ function fingerFile(f, algo, callback) {
     algo = 'md5';
   }
 
-  var fd = fs.createReadStream(f)
-    , hash = crypto.createHash(algo || 'md5');
+  var fd = fs.createReadStream(f);
+  var hash = crypto.createHash(algo || 'md5');
 
   hash.setEncoding('hex');
 
@@ -33,8 +33,8 @@ function fingerString(str, algo) {
 }
 
 function fingerObject(obj, algo) {
-  var hash = crypto.createHash(algo || 'md5')
-    , keys = Object.keys(obj || {});
+  var hash = crypto.createHash(algo || 'md5');
+  var keys = Object.keys(obj || {});
   keys.sort();
   for (var i=0; i < keys.length; i++) {
     var key = keys[i];
@@ -59,18 +59,18 @@ function fingerArray(arr, algo, deep) {
 }
 
 module.exports = {
-    file: fingerFile
-  , stringSync: fingerString
-  , objectSync: fingerObject
-  , arraySync: fingerArray
-  , sync: function(obj, algo) {
-      switch (toString.call(obj)) {
-        case '[object Object]':
-          return fingerObject(obj, algo);
-        case '[object Array]':
-          return fingerArray(obj, algo);
-        default:
-          return fingerString(obj, algo);
-      }
+  file: fingerFile,
+  stringSync: fingerString,
+  objectSync: fingerObject,
+  arraySync: fingerArray,
+  sync: function(obj, algo) {
+    switch (toString.call(obj)) {
+      case '[object Object]':
+        return fingerObject(obj, algo);
+      case '[object Array]':
+        return fingerArray(obj, algo);
+      default:
+        return fingerString(obj, algo);
     }
+  }
 };

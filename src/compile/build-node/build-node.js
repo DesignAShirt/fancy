@@ -22,9 +22,8 @@ module.exports = function(index, options, callback) {
     var IGNORED_KEYS = [ 'private', 'scripts' ];
 
     for (var k in template) {
-      if (IGNORED_KEYS.indexOf(k) < 0) {
+      if (IGNORED_KEYS.indexOf(k) < 0)
         template[k] = pkg[k] || '';
-      }
     }
 
     template['dependencies'] = {
@@ -37,12 +36,12 @@ module.exports = function(index, options, callback) {
 
     tasks = utils.eachObject(index, options, function(k, entry, abs) {
       var diskUrl = Array.isArray(entry.url) ? entry.url[0] : entry.url;
-      if (diskUrl[diskUrl.length - 1] === path.sep) {
+      if (diskUrl[diskUrl.length - 1] === path.sep)
         diskUrl += 'index';
-      }
-      if (!/\.[\w\d_-]+$/.test(diskUrl)) { // don't add for urls with an extension
+
+      if (!/\.[\w\d_-]+$/.test(diskUrl)) // don't add for urls with an extension
         diskUrl += '.' + options.ext;
-      }
+
       var source = path.join(options.destination, diskUrl);
       log.debug({ key: k, entry: entry, abs: abs, from: source, to: diskUrl }, 'creating copy task');
       return async.apply(utils.copy, abs, source);

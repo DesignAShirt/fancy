@@ -9,8 +9,7 @@ var cmd = commands[cmdName];
 
 if (cmd) {
   cmd(yargs);
-}
-else {
+} else {
   console.log('Command not found: %s', cmdName);
   console.log(Object.keys(commands).join(' '));
   process.exit(-1);
