@@ -1,10 +1,10 @@
 "use strict";
 
+var chokidar = require('chokidar');
 var os = require('os');
 var fs = require('fs');
 var path = require('path');
 var glob = require('glob');
-var gaze = require('gaze');
 var async = require('async');
 
 var help = require('../../utils/help.js');
@@ -16,31 +16,6 @@ var parsers = require('../parsers/index.js');
 
 var IS_WIN = os.platform() === 'win32';
 var PROVIDER_PREFIX = 'provider:';
-
-// patch gaze
-var gazeHelper = require('gaze/lib/helper.js');
-gazeHelper.forEachSeries = function forEachSeries(arr, iterator, callback) {
-  if (!arr.length) { return callback(); }
-  var completed = 0;
-  var iterate = function() {
-    process.nextTick(function() {
-      iterator(arr[completed], function (err) {
-        if (err) {
-          callback(err);
-          callback = function() {};
-        } else {
-          completed += 1;
-          if (completed === arr.length) {
-            callback(null);
-          } else {
-            iterate();
-          }
-        }
-      });
-    });
-  };
-  iterate();
-};
 
 // FIXME: #1 priority. now that it's clear what needs to happen here, the entire FancyDb/FancyPage stuff is tangled and needs some attention: this needs to be an abstracting/caching layer between fancy and db
 
@@ -57,101 +32,87 @@ function FancyDb(contentDirectories, dataChangedHandler) {
 }
 
 FancyDb.prototype.init = function(callback) {
-  var _this = this
-    , tasks = [];
+  var tasks = [];
 
-  orm.sequelize.sync({ force: true }).then(function() {
-    _this.reload(function(err) { // reload from disk
-      tasks.push(function(taskCallback) {
-        _this._watchFiles(taskCallback);
+  orm.sequelize.sync({ force: true }).then(() => {
+    this.reload(err => { // reload from disk
+      tasks.push(taskCallback => {
+        this._watchFiles(taskCallback);
       });
-      // tasks.push(function(taskCallback) {
-      //   _this._watchProviders(taskCallback);
+      // tasks.push(taskCallback => {
+      //   this._watchProviders(taskCallback);
       // });
-      async.parallelLimit(tasks, 2, function(err) {
-        callback.call(_this, err);
+      async.parallelLimit(tasks, 2, err => {
+        callback.call(this, err);
       });
     });
-  }, function(err) {
-    callback.call(_this, err);
+  }, err => {
+    callback.call(this, err);
   });
 };
 
 FancyDb.prototype._watchFiles = function(callback) {
-  var _this = this;
   // FIXME: this iterates an array but calls the callback each iteration
-  _this.contentDirectories.forEach(function(contentDirectory) {
+  this.contentDirectories.forEach(contentDirectory => {
     // console.log('Watching files in content directory: %s', contentDirectory)
     if (IS_WIN) {
       console.log('*** File watching is disabled on Windows ***');
       console.log('Files will not be watched for changes in: ', contentDirectory);
-      _this._watchFilesWin(contentDirectory, callback);
-    }
-    else {
-      _this._watchFilesNix(contentDirectory, callback);
+      this._watchFilesWin(contentDirectory, callback);
+    } else {
+      console.log("Now watching files in ", contentDirectory);
+      this._watchFilesNix(contentDirectory, callback);
     }
   });
 };
 
+
+
 FancyDb.prototype._watchFilesNix = function(contentDirectory, callback) {
-  var _this = this;
-  gaze(contentDirectory + '/**/*.html', function(err, watcher) { // set up file watcher for changes
-    if (err) {
-      return callback(err);
-    }
-
-    watcher.on('changed', function(absolutePath) {
-      var relativePath = help.absoluteToRelative(absolutePath);
-      relativePath = help.getContentDirectoryPath(relativePath);
-      if (_this.isValidFile(relativePath)) {
-        console.log('%s changed', relativePath);
-        _this.reloadFile(relativePath, function(err) {
-          if (err) {
-            throw err;
-          }
-          _this.dataChangedHandler(relativePath);
-        });
-      }
-    });
-
-    watcher.on('added', function(absolutePath) {
-      var relativePath = help.absoluteToRelative(absolutePath);
-      relativePath = help.getContentDirectoryPath(relativePath);
-      if (_this.isValidFile(relativePath)) {
-        console.log('%s was added', relativePath);
-        _this.addFile(relativePath, function(err) {
-          if (err) {
-            throw err;
-          }
-          _this.dataChangedHandler(relativePath);
-        });
-      }
-    });
-
-    watcher.on('deleted', function(absolutePath) {
-      var relativePath = help.absoluteToRelative(absolutePath);
-      relativePath = help.getContentDirectoryPath(relativePath);
-      if (_this.isValidFile(relativePath)) {
-        console.log('%s deleted', relativePath);
-        _this.removeFile(relativePath, function(err) {
-          if (err) {
-            throw err;
-          }
-          _this.dataChangedHandler(relativePath);
-        });
-      }
-    });
-
-    callback(null);
+  let watcher = chokidar.watch(path.join(contentDirectory, '**', '*.html'), {
+    ignoreInitial: true // don't fire "add" events when initially loading.
   });
+
+  function updateData (action, message, relativePath) {
+    if (this.isValidFile(relativePath)) {
+      console.log(message, relativePath);
+      action(relativePath, err => {
+        if (err)
+          throw err;
+
+        this.dataChangedHandler(relativePath);
+      });
+    }
+  }
+
+  watcher.on('change', relativePath => {
+    console.info("%s changed", relativePath);
+    updateData.call(this, this.reloadFile.bind(this), "%s changed", relativePath);
+  });
+
+  watcher.on('add', relativePath => {
+    console.info("%s added", relativePath);
+    updateData.call(this, this.addFile.bind(this), "%s was added", relativePath);
+  });
+
+  watcher.on('unlink', relativePath => {
+    console.info("%s deleted", relativePath);
+    updateData.call(this, this.removeFile.bind(this), "%s deleted", relativePath);
+  });
+
+  watcher.on('error', error => {
+    console.error("File watcher error: ", error);
+  });
+
+  callback(null);
 };
 
 FancyDb.prototype._watchFilesWin = function(contentDirectory, callback) {
   var _this = this;
   glob(contentDirectory + '/**/*.html', function(err, files) {
-    if (err) {
+    if (err)
       return callback(err);
-    }
+
     files.forEach(function(relativePath) {
       relativePath = help.getContentDirectoryPath(relativePath);
       if (_this.isValidFile(relativePath)) {
@@ -425,22 +386,19 @@ FancyDb.prototype.reload = function(callback) {
 };
 
 FancyDb.prototype.isValidFile = function(relativePath) {
-  var valid = false;
   if (help.isDirectory(relativePath)) {
     if (/\.html$/i.test(relativePath)) { // only html directories supported
-      valid = true;
-    }
-    else {
+      return true;
+    } else {
       console.warn('Warning: Only .html directory is allowed: %s', relativePath);
+      return false;
     }
-  }
-  else if (/\.html\/.*/i.test(relativePath)) { // html exists in subdir of a html dir
+  } else if (/\.html\/.*/i.test(relativePath)) { // html exists in subdir of a html dir
     console.log('Processing as content directory: %s', relativePath);
+    return false;
+  } else {
+    return true;
   }
-  else {
-    valid = true;
-  }
-  return valid;
 };
 
 FancyDb.prototype._reloadFiles = function(callback) {
