@@ -185,13 +185,13 @@ Compile.prototype.onReady = function(callback) {
     logger.info({ target: destinationAssetsPath }, 'cleaning up compiled assets');
     rimraf(destinationAssetsPath, E.bubbles(taskCallback, function() {
       if (allAssets.length) {
-        var uniqueAssets = _.where(allAssets, { collision: false });
+        var uniqueAssets = _.filter(allAssets, { collision: false });
         var assetMoveTasks = uniqueAssets.map(function(element) {
           logger.trace({ path: destinationAssetsPath, element: element }, 'generating move task');
           return async.apply(moveAsset, element.abs, path.join(destinationAssetsPath, element.rel));
         });
         async.parallelLimit(assetMoveTasks, 32, E.bubbles(taskCallback, function() {
-          logger.info({ list: _.pluck(uniqueAssets, 'abs'), destination: destinationAssetsPath }, 'assets moved');
+          logger.info({ list: _.map(uniqueAssets, 'abs'), destination: destinationAssetsPath }, 'assets moved');
           taskCallback();
         }));
       } else {

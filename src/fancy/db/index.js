@@ -55,14 +55,17 @@ FancyDb.prototype._watchFiles = function(callback) {
   // FIXME: this iterates an array but calls the callback each iteration
   this.contentDirectories.forEach(contentDirectory => {
     // console.log('Watching files in content directory: %s', contentDirectory)
-    if (IS_WIN) {
-      console.log('*** File watching is disabled on Windows ***');
-      console.log('Files will not be watched for changes in: ', contentDirectory);
-      this._watchFilesWin(contentDirectory, callback);
-    } else {
-      console.log("Now watching files in ", contentDirectory);
-      this._watchFilesNix(contentDirectory, callback);
-    }
+    console.log('*** File watching is disabled ***');
+    return void this._watchFilesNix(contentDirectory, callback);
+
+    // if (IS_WIN) {
+    //   console.log('*** File watching is disabled on Windows ***');
+    //   console.log('Files will not be watched for changes in: ', contentDirectory);
+    //   this._watchFilesWin(contentDirectory, callback);
+    // } else {
+    //   console.log("Now watching files in ", contentDirectory);
+    //   this._watchFilesNix(contentDirectory, callback);
+    // }
   });
 };
 
