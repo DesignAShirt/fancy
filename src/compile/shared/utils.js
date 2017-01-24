@@ -4,7 +4,7 @@ var path = require('path');
 var fs = require('fs');
 var rimraf = require('rimraf');
 var mkdirp = require('mkdirp');
-var ncp = require('ncp').ncp;
+var cpr = require('cpr');
 var async = require('async');
 
 var E = require('../../utils/E.js');
@@ -72,7 +72,7 @@ var copyAllAssets = module.exports.copyAllAssets = function copyAllAssets(option
       var transactionSource = path.join(options.sourceAssets, assetPath);
       var transactionDestination = path.join(options.destinationAssets, assetPath);
       log.trace({ assetSource: transactionSource, assetDestination: transactionDestination }, 'found and copying assets');
-      ncp(transactionSource, transactionDestination, taskCallback);
+      cpr(transactionSource, transactionDestination, taskCallback);
     });
   });
   return tasks;
@@ -84,7 +84,7 @@ var build = module.exports.build = function build(tasks, options, callback) {
       return callback(err);
 
     mkdirp.sync(options.dist);
-    ncp(options.buildDestination, options.dist, function(err) {
+    cpr(options.buildDestination, options.dist, function(err) {
       if (err)
         return callback(err);
 

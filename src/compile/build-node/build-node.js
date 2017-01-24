@@ -3,10 +3,7 @@
 var path = require('path');
 var fs = require('fs');
 
-var ncp = require('ncp').ncp;
 var async = require('async');
-
-ncp.stopOnError = true;
 
 var utils = require('../shared/utils.js');
 var E = require('../../utils/E.js');

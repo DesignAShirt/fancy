@@ -3,10 +3,7 @@
 require('http').globalAgent.maxSockets = require('https').globalAgent.maxSockets = 20;
 
 var path = require('path');
-var ncp = require('ncp').ncp;
 var async = require('async');
-
-ncp.stopOnError = true;
 
 var utils = require('../shared/utils.js');
 var log = require('../../utils/log.js');

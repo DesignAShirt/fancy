@@ -2,9 +2,6 @@
 
 var path = require('path');
 var fs = require('fs');
-var ncp = require('ncp').ncp;
-
-ncp.stopOnError = true;
 
 var log = require('../utils/log.js');
 

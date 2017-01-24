@@ -2,8 +2,9 @@
 
 var path = require('path');
 
-var ncp = require('ncp').ncp;
-ncp.clobber = true;
+var cpr = require('cpr');
+
+var cprOpts = { overwrite: true };
 
 var help = require('../../utils/help.js');
 
@@ -49,15 +50,15 @@ module.exports = {
 
   copyTemplate: function(dirs, callback) {
     var templatePath = path.join(__dirname, '../templates');
-    ncp(path.join(templatePath, 'data/constants/'), dirs.constants, function (err) {
+    cpr(path.join(templatePath, 'data/constants/'), dirs.constants, cprOpts, function (err) {
       if (err) return console.log(err);
-      ncp(path.join(templatePath, 'data/content/'), dirs.content, function (err) {
+      cpr(path.join(templatePath, 'data/content/'), dirs.content, cprOpts, function (err) {
         if (err) return console.log(err);
-        ncp(path.join(templatePath, 'theme/'), dirs.themes, function (err) {
+        cpr(path.join(templatePath, 'theme/'), dirs.themes, cprOpts, function (err) {
           if (err) return console.log(err);
-          ncp(path.join(templatePath, 'config.yml'), path.join(dirs.cwd, 'config.yml'), function (err) {
+          cpr(path.join(templatePath, 'config.yml'), path.join(dirs.cwd, 'config.yml'), cprOpts, function (err) {
             if (err) return console.log(err);
-            ncp(path.join(templatePath, 'package.json'), path.join(dirs.cwd, 'package.json'), function (err) {
+            cpr(path.join(templatePath, 'package.json'), path.join(dirs.cwd, 'package.json'), cprOpts, function (err) {
               if (err) return console.log(err);
               callback();
             });
