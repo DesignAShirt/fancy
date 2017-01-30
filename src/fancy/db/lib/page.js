@@ -60,27 +60,26 @@ FancyPage.prototype.init = function(properties, callback) {
     properties = null;
   }
 
-  var done = function() {
-    if (!_this.hasRoute())
-      return void callback.call(_this, new Error('Page must have a route property: ' + _this.relativePath));
+  var done = () => {
+    if (!this.hasRoute())
+      return void callback.call(this, new Error('Page must have a route property: ' + this.relativePath));
     else
-      callback.call(_this, null, _this);
+      callback.call(this, null, this);
   };
 
-  var _this = this;
-  _this.create(properties, function(err) {
+  this.create(properties, (err) => {
     if (err)
-      return callback.call(_this, err);
+      return callback.call(this, err);
 
-    _this.refresh(function(err) {
+    this.refresh((err) => {
       if (err)
-        return callback.call(_this, err);
+        return callback.call(this, err);
 
-      if (_this.isDirectory) {
-        var assetPath = path.join(_this.relativePath, '/public'); // if path is a directory and has a public asset directory, load them
-        fs.exists(assetPath, function(exists) {
+      if (this.isDirectory) {
+        var assetPath = path.join(this.relativePath, '/public'); // if path is a directory and has a public asset directory, load them
+        fs.exists(assetPath, (exists) => {
           if (exists)
-            _this.assetPath = assetPath;
+            this.assetPath = assetPath;
 
           done();
         });
@@ -92,26 +91,25 @@ FancyPage.prototype.init = function(properties, callback) {
 };
 
 FancyPage.prototype.create = function(properties, callback) {
-  var _this = this;
-  var done = function(err, dataObject) {
+  var done = (err, dataObject) => {
     if (err)
-      return callback.call(_this, err);
+      return callback.call(this, err);
 
-    _this.dataObject = dataObject;
+    this.dataObject = dataObject;
     if (properties)
-      _this.setProperties(properties, callback);
+      this.setProperties(properties, callback);
     else
-      _this.reload(callback);
+      this.reload(callback);
   };
 
   Page.find({
-    where: { path: _this.relativePath },
+    where: { path: this.relativePath },
     // include: [ Property ] // FIXME: turn properties back on when db is improved
-  }).done(function(err, dataObject) {
+  }).done((err, dataObject) => {
     if (err) {
       return done(err);
     } else if (!dataObject) {
-      Page.create({ path: _this.relativePath, fingerprint: 'NOT_FINGERPRINTED' }).done(done);
+      Page.create({ path: this.relativePath, fingerprint: 'NOT_FINGERPRINTED' }).done(done);
     } else {
       return void done(null, dataObject);
     }
@@ -119,17 +117,16 @@ FancyPage.prototype.create = function(properties, callback) {
 };
 
 FancyPage.prototype.refresh = function(callback) {
-  var _this = this;
   Page.find({
-    where: { path: _this.relativePath },
+    where: { path: this.relativePath },
     // include: [ Property ] // FIXME: turn properties back on when db is improved
-  }).done(function(err, dataObject) {
+  }).done((err, dataObject) => {
     if (err)
-      return callback.call(_this, err);
+      return callback.call(this, err);
 
-    _this.dataObject = dataObject;
-    _this.dataObject.properties = _this._properties;
-    callback.call(_this, null);
+    this.dataObject = dataObject;
+    this.dataObject.properties = this._properties;
+    callback.call(this, null);
   });
 };
 
@@ -148,44 +145,42 @@ FancyPage.prototype.reload = function(callback) {
 };
 
 FancyPage.prototype._reloadFile = function(callback) {
-  var _this = this;
-
   // FIXME: turn properties back on when db is improved
 
   // // console.log('fingerprint %s', this.contentPath);
-  fingerprint.file(_this.contentPath, function(err, fingerprint) {
+  fingerprint.file(this.contentPath, (err, fingerprint) => {
   //   // console.log('\t-> fingerprint returned');
     if (err)
-      return callback.call(_this, err);
+      return callback.call(this, err);
 
-  //   _this.dataObject.fingerprint = fingerprint;
-  //   _this.dataObject.save().done(function(err) {
+  //   this.dataObject.fingerprint = fingerprint;
+  //   this.dataObject.save().done((err) => {
   //     // console.log('\t-> save returned');
   //     if (err) {
-  //       return callback.call(_this, err);
+  //       return callback.call(this, err);
   //     }
 
     var cacheKey = 'fancy:content:' + fingerprint;
-    // cache.io(cacheKey, function(err, data) {
+    // cache.io(cacheKey, (err, data) => {
     //   if (err) {
-    //     return callback.call(_this, err);
+    //     return callback.call(this, err);
     //   }
     //   if (void 0 === data) { // not cached
-    //     console.log('cache.io MISS: %s', _this.contentPath);
-        _this._parseFile(function(err, properties) {
+    //     console.log('cache.io MISS: %s', this.contentPath);
+        this._parseFile((err, properties) => {
           if (err)
-            return callback.call(_this, err);
+            return callback.call(this, err);
 
-          // cache.io(cacheKey, properties, function(err, data) {
+          // cache.io(cacheKey, properties, (err, data) => {
           //   if (err) {
-          //     return callback.call(_this, err);
+          //     return callback.call(this, err);
           //   }
-            _this.setProperties(properties, callback.bind(_this));
+            this.setProperties(properties, callback.bind(this));
           // });
         });
     //   }
     //   else {
-    //     _this.setProperties(data, callback.bind(_this));
+    //     this.setProperties(data, callback.bind(this));
     //   }
     // });
 
@@ -214,8 +209,7 @@ FancyPage.prototype._propertiesObjectHasKey = function(properties, key) {
 };
 
 FancyPage.prototype._parseFile = function(callback) {
-  var _this = this;
-  parsers(_this.contentPath, function(err, properties) {
+  parsers(this.contentPath, (err, properties) => {
     // console.log('\t-> parser returned');
     if (err)
       return callback(err);
@@ -224,9 +218,9 @@ FancyPage.prototype._parseFile = function(callback) {
 
     // page doesn't contain a body and the page is a content directory.  try to grab the body as a separate file
     // this really only useful for markdown body.md, otherwise it's better to just combine everything
-    if (!_this._propertiesObjectHasKey(properties, 'body') && _this.isDirectory) {
-      var bodyPath = _this._findParseable('body');
-      parsers(bodyPath, function(err, bodyProps) {
+    if (!this._propertiesObjectHasKey(properties, 'body') && this.isDirectory) {
+      var bodyPath = this._findParseable('body');
+      parsers(bodyPath, (err, bodyProps) => {
         if (err)
           return callback(err);
 
@@ -240,9 +234,8 @@ FancyPage.prototype._parseFile = function(callback) {
 };
 
 FancyPage.prototype._reloadProviderObject = function(callback) {
-  var _this = this;
-  _this.dataObject.fingerprint = fingerprint.objectSync(_this.dataObject.properties);
-  _this.dataObject.save().done(callback.bind(_this));
+  this.dataObject.fingerprint = fingerprint.objectSync(this.dataObject.properties);
+  this.dataObject.save().done(callback.bind(this));
 };
 
 FancyPage.prototype.remove = function(callback) {
@@ -251,42 +244,41 @@ FancyPage.prototype.remove = function(callback) {
 };
 
 FancyPage.prototype.setProperties = function(properties, callback) {
-  var _this = this;
   var tasks = [];
   var resourceTasks = [];
 
   if (!properties)
     return void callback(null);
 
-  if (!_this.dataObject)
+  if (!this.dataObject)
     throw new Error('Page data object not yet ready');
 
   // console.log('setProperties', properties);
 
-  iterator(properties).forEach(function(prop) {
+  iterator(properties).forEach((prop) => {
     var propName = prop[0];
     var propValue = prop[1];
 
     switch (propName) {
       // case 'resource':
       //   var resourceName = propValue.trim().toLowerCase();
-      //   tasks.push(function(taskCallback) {
+      //   tasks.push((taskCallback) => {
       //     console.log('Looking up existing resource %s...', propValue);
-      //     Resource.find({ where: { name: resourceName } }).done(function(err, resource) {
+      //     Resource.find({ where: { name: resourceName } }).done((err, resource) => {
       //       if (err) {
       //         return taskCallback(err);
       //       }
       //       if (resource) {
       //         console.log('Resource %s already exists', propValue);
       //         taskCallback(null);
-      //         // _this.dataObject.setResource(resource).done(taskCallback);
+      //         // this.dataObject.setResource(resource).done(taskCallback);
       //         return;
       //       }
       //       else {
       //         console.log('Creating resource %s...', propValue);
-      //         Resource.create({ name: resourceName }).then(function(resource) {
+      //         Resource.create({ name: resourceName }).then((resource) => {
       //           console.log('Done creating resource %s', propValue);
-      //           // _this.dataObject.setResource(resource).done(taskCallback);
+      //           // this.dataObject.setResource(resource).done(taskCallback);
       //           taskCallback(null);
       //         });
       //         return;
@@ -296,46 +288,46 @@ FancyPage.prototype.setProperties = function(properties, callback) {
       // break;
 
       case 'layout':
-        if (!_this.layout)
-          _this.layout = propValue;
+        if (!this.layout)
+          this.layout = propValue;
         else
-          console.warn('Layout has already been set for page %s', _this.relativePath);
+          console.warn('Layout has already been set for page %s', this.relativePath);
       break;
 
       case 'resource':
-        if (!_this.resource)
-          _this.resource = propValue;
+        if (!this.resource)
+          this.resource = propValue;
         else
-          console.warn('Resource has already been set for page %s', _this.relativePath);
+          console.warn('Resource has already been set for page %s', this.relativePath);
       break;
     }
 
-    tasks.push(function(taskCallback) {
+    tasks.push((taskCallback) => {
       taskCallback(null, { name: propName, content: propValue });
 
       // FIXME: turn properties back on when db is improved
 
-      // Property.create({ name: propName, content: propValue }).done(function(err, property) {
+      // Property.create({ name: propName, content: propValue }).done((err, property) => {
       //   if (err) {
       //     return taskCallback(err);
       //   }
-      //   // _this.dataObject.addProperty(property).done(taskCallback);
+      //   // this.dataObject.addProperty(property).done(taskCallback);
       //   taskCallback(null, property);
       // });
     });
   });
 
-  async.parallelLimit(tasks, 2, function(err, properties) {
+  async.parallelLimit(tasks, 2, (err, properties) => {
     if (err)
-      return callback.call(_this, err);
+      return callback.call(this, err);
 
-    _this._properties =
-    _this.dataObject.properties = properties;
+    this._properties =
+    this.dataObject.properties = properties;
 
     // FIXME: turn properties back on when db is improved
 
-    // _this.dataObject.addProperties(properties).then(function() {
-      _this.refresh(callback.bind(_this));
+    // this.dataObject.addProperties(properties).then(() => {
+      this.refresh(callback.bind(this));
     // });
   });
 };
