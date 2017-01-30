@@ -22,6 +22,11 @@ module.exports = function(contents, callback) {
   });
   addProp('contentType', contentType);
 
+  // FIXME:
+  // Come up with a more flexible system to force content to be on the page. This
+  // is a common thing to need in the real world.
+  addProp('headerScripts', $.html('head>script'));
+
   $('head>property,head>meta').each(function() {
     var $el = $(this);
     if ($el.attr('http-equiv')) return;
