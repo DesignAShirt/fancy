@@ -97,17 +97,6 @@ Fancy.prototype.init = function(callback) {
   var tasks = [];
 
   tasks.push(taskCallback => {
-    var notifier = help.notifier('Loading web server');
-    server(this, err => {
-      if (err)
-        return taskCallback(err);
-
-      notifier.done();
-      taskCallback(null);
-    });
-  });
-
-  tasks.push(taskCallback => {
     this.db = new FancyDb(this.options.contentDirectories, this.clearResponseCache);
     (this.options.providers || []).forEach(providerName => {
       var providerPath = path.join(process.cwd(), './data/providers/' + providerName + '/index.js');
@@ -157,8 +146,16 @@ Fancy.prototype.init = function(callback) {
     if (err)
       return callback(err);
 
-    console.log('Fancy initialized and listening on port %d', this.options.port);
-    callback.call(this, null);
+    var notifier = help.notifier('Loading web server');
+    server(this, err => {
+      if (err)
+        return callback(err);
+
+      notifier.done();
+      console.log('Fancy initialized and listening on port %d', this.options.port);
+      callback.call(this, null);
+    });
+
   });
 };
 
