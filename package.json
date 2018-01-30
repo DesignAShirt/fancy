@@ -1,6 +1,6 @@
 {
   "name": "fancy",
-  "version": "0.0.13.3",
+  "version": "0.0.13.4",
   "description": "A static site generator based on cheerio.",
   "main": "src/fancy/index.js",
   "scripts": {

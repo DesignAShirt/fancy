@@ -65,8 +65,10 @@ module.exports = function(fancy, callback) {
     app.set('views', path.join(process.cwd(), './themes/' + fancy.options.theme + '/views'));
 
     function renderError(req, res, err) {
-      console.error("Rendering error:");
-      console.error(err);
+      if (err.status !== 404) {
+        console.error("Rendering error:");
+        console.error(err);
+      }
       res.status(err.status || 500);
       res.render('layouts/error', fancy.createResponse(req.url, {
         message: err.message,
