@@ -176,8 +176,10 @@ var helpers = function(ctx, fancy) {
 
       var viewPath = fancy.getView(ctx.page.layout, view);
       var contents = fs.readFileSync(viewPath).toString();
-      return ejs.render(contents, {
-        locals: res,
+      return ejs.render(contents, res, {
+        _with: true,
+        strict: false,
+        cache: false,
         filename: viewPath
       });
     },
