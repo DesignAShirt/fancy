@@ -2,9 +2,6 @@
 
 var fs = require('fs');
 var rimraf = require('rimraf');
-var portfinder = require('portfinder');
-
-portfinder.basePort = 3000;
 
 var Compile = require('../../compile/index.js');
 var Build = require('../../compile/build.js');

@@ -65,7 +65,7 @@ module.exports = function(fancy, callback) {
     app.set('views', path.join(process.cwd(), './themes/' + fancy.options.theme + '/views'));
 
     function renderError(req, res, err) {
-      console.error("Render error:");
+      console.error("Rendering error:");
       console.error(err);
       res.status(err.status || 500);
       res.render('layouts/error', fancy.createResponse(req.url, {
@@ -75,7 +75,7 @@ module.exports = function(fancy, callback) {
       }));
     }
 
-    function renderPage(req, res, details, next) {
+    function renderPage(req, res, details) {
       fancy.routeDiscovered(req.url);
       var contentType = details.res.page.contentType || 'text/html';
       if (contentType.indexOf(';') > -1)
@@ -97,24 +97,23 @@ module.exports = function(fancy, callback) {
     });
 
     var router = express.Router();
-    router.get('*', function(req, res, next) {
+    router.get('*', function(req, res) {
       fancy.requestPage(req.url, function(err, details) {
         if (err) {
           if (req.url.indexOf('?') > -1) { // has querystring?
             // drop it and try matching
-            fancy.requestPage(req.url.split('?')[0], function(err, details) {
-              if (err)
+            fancy.requestPage(req.url.split('?')[0], function(err2, details) {
+              if (err2)
                 return void renderError(req, res, err);
-
-              renderPage(res, res, details, next);
+              else
+                return void renderPage(req, res, details);
             });
           } else {
-            renderError(req, res, err);
+            return void renderError(req, res, err);
           }
-          return;
+        } else {
+          renderPage(req, res, details);
         }
-
-        renderPage(res, res, details, next);
       });
     });
     app.use('/', router);

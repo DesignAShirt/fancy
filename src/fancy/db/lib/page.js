@@ -105,29 +105,33 @@ FancyPage.prototype.create = function(properties, callback) {
   Page.find({
     where: { path: this.relativePath },
     // include: [ Property ] // FIXME: turn properties back on when db is improved
-  }).done((err, dataObject) => {
-    if (err) {
-      return done(err);
-    } else if (!dataObject) {
-      Page.create({ path: this.relativePath, fingerprint: 'NOT_FINGERPRINTED' }).done(done);
+  }).then(dataObject => {
+    if (!dataObject) {
+      return Page.create({ path: this.relativePath, fingerprint: 'NOT_FINGERPRINTED' })
+        .then(d => done(null, d));
     } else {
       return void done(null, dataObject);
     }
-  });
+  })
+    .catch(err => {
+      done(err);
+    });
 };
 
 FancyPage.prototype.refresh = function(callback) {
-  Page.find({
+  return Page.find({
     where: { path: this.relativePath },
     // include: [ Property ] // FIXME: turn properties back on when db is improved
-  }).done((err, dataObject) => {
-    if (err)
-      return callback.call(this, err);
-
-    this.dataObject = dataObject;
-    this.dataObject.properties = this._properties;
-    callback.call(this, null);
-  });
+  })
+    .then(dataObject => {
+      this.dataObject = dataObject;
+      this.dataObject.properties = this._properties;
+      callback.call(this, null);
+      return null;
+    })
+    .catch(err => {
+      callback.call(this, err);
+    });
 };
 
 FancyPage.prototype.reload = function(callback) {
@@ -235,7 +239,9 @@ FancyPage.prototype._parseFile = function(callback) {
 
 FancyPage.prototype._reloadProviderObject = function(callback) {
   this.dataObject.fingerprint = fingerprint.objectSync(this.dataObject.properties);
-  this.dataObject.save().done(callback.bind(this));
+  this.dataObject.save()
+    .then(d => callback.call(this, null, d))
+    .catch(err => callback.call(this, err));
 };
 
 FancyPage.prototype.remove = function(callback) {

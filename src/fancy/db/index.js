@@ -34,21 +34,23 @@ function FancyDb(contentDirectories, dataChangedHandler) {
 FancyDb.prototype.init = function(callback) {
   var tasks = [];
 
-  orm.sequelize.sync({ force: true }).then(() => {
-    this.reload(err => { // reload from disk
-      tasks.push(taskCallback => {
-        this._watchFiles(taskCallback);
+  orm.sequelize.sync({ force: true })
+    .then(() => {
+      this.reload(err => { // reload from disk
+        tasks.push(taskCallback => {
+          this._watchFiles(taskCallback);
+        });
+        // tasks.push(taskCallback => {
+        //   this._watchProviders(taskCallback);
+        // });
+        async.parallelLimit(tasks, 2, err => {
+          callback.call(this, err);
+        });
       });
-      // tasks.push(taskCallback => {
-      //   this._watchProviders(taskCallback);
-      // });
-      async.parallelLimit(tasks, 2, err => {
-        callback.call(this, err);
-      });
+    })
+    .catch(err => {
+      callback.call(this, err);
     });
-  }, err => {
-    callback.call(this, err);
-  });
 };
 
 FancyDb.prototype._watchFiles = function(callback) {
@@ -389,7 +391,7 @@ FancyDb.prototype.isValidFile = function(relativePath) {
       return false;
     }
   } else if (/\.html\/.*/i.test(relativePath)) { // html exists in subdir of a html dir
-    console.log('Processing as content directory: %s', relativePath);
+    // console.log('Processing as content directory: %s', relativePath);
     return false;
   } else {
     return true;

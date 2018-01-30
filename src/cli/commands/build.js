@@ -1,9 +1,5 @@
 "use strict";
 
-var portfinder = require('portfinder');
-
-portfinder.basePort = 3000;
-
 var Build = require('../../compile/build.js');
 var help = require('../../utils/help');
 

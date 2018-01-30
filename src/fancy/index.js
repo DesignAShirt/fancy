@@ -122,8 +122,8 @@ Fancy.prototype.init = function(callback) {
     _this.db.init(function(err, db) {
       if (err)
         return taskCallback(err);
-
-      taskCallback(null);
+      else
+        return taskCallback(null);
     });
   });
 
