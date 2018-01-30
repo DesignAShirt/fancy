@@ -94,12 +94,11 @@ function Fancy(options) {
 }
 
 Fancy.prototype.init = function(callback) {
-  var _this = this;
   var tasks = [];
 
-  tasks.push(function(taskCallback) {
+  tasks.push(taskCallback => {
     var notifier = help.notifier('Loading web server');
-    server(_this, function(err) {
+    server(this, err => {
       if (err)
         return taskCallback(err);
 
@@ -108,18 +107,18 @@ Fancy.prototype.init = function(callback) {
     });
   });
 
-  tasks.push(function(taskCallback) {
-    _this.db = new FancyDb(_this.options.contentDirectories, _this.clearResponseCache);
-    (_this.options.providers || []).forEach(function(providerName) {
+  tasks.push(taskCallback => {
+    this.db = new FancyDb(this.options.contentDirectories, this.clearResponseCache);
+    (this.options.providers || []).forEach(providerName => {
       var providerPath = path.join(process.cwd(), './data/providers/' + providerName + '/index.js');
       if (fs.existsSync(providerPath)) {
         // console.log('Loading provider %s...', providerPath);
-        _this.db.providers.push(require(providerPath)); // TODO: move paths someplace configurable
+        this.db.providers.push(require(providerPath)); // TODO: move paths someplace configurable
       } else {
         console.warn('Warning: Unable to load provider %s', providerPath);
       }
     });
-    _this.db.init(function(err, db) {
+    this.db.init((err, db) => {
       if (err)
         return taskCallback(err);
       else
@@ -128,21 +127,21 @@ Fancy.prototype.init = function(callback) {
   });
 
   // TODO: make async
-  tasks.push(function(taskCallback) {
+  tasks.push(taskCallback => {
     var notifier = help.notifier('Site constants');
-    glob('./data/constants/**/*.@(yml|json)', function(err, matches) {
+    glob('./data/constants/**/*.@(yml|json)', (err, matches) => {
       if (err)
         return callback(err);
 
-      matches.forEach(function(relativePath) {
+      matches.forEach(relativePath => {
         switch (path.extname(relativePath)) {
           case '.yml':
             var constantsKey = path.basename(relativePath, '.yml');
-            _this.constants[constantsKey] = yaml.load(fs.readFileSync(relativePath, 'utf8'));
+            this.constants[constantsKey] = yaml.load(fs.readFileSync(relativePath, 'utf8'));
           break;
           case '.json':
             var constantsKey = path.basename(relativePath, '.json');
-            _this.constants[constantsKey] = JSON.parse(fs.readFileSync(relativePath, 'utf8'));
+            this.constants[constantsKey] = JSON.parse(fs.readFileSync(relativePath, 'utf8'));
           break;
           default:
             throw new Error('Invalid constant file format %s', relativePath);
@@ -154,12 +153,12 @@ Fancy.prototype.init = function(callback) {
     });
   });
 
-  async.parallelLimit(tasks, 2, function(err) {
+  async.parallelLimit(tasks, 2, err => {
     if (err)
       return callback(err);
 
-    console.log('Fancy initialized and listening on port %d', _this.options.port);
-    callback.call(_this, null);
+    console.log('Fancy initialized and listening on port %d', this.options.port);
+    callback.call(this, null);
   });
 };
 
@@ -335,9 +334,8 @@ Fancy.prototype._reduceMatchingRoutes = function(pages) {
 // returns response object via callback
 Fancy.prototype.requestPage = function(url, callback) {
   // console.log('Getting page for %s...', url);
-  var _this = this;
 
-  _this.db.findPageByRoute(url, function(err, pages) {
+  this.db.findPageByRoute(url, (err, pages) => {
     if (err)
       return callback(err);
 
@@ -345,14 +343,14 @@ Fancy.prototype.requestPage = function(url, callback) {
     if (!pages.length) { // no direct match found.  urlPattern matching
       // console.log('\t-> No exact matching routes');
       pages = [];
-      for (var relativePath in _this.db.pages) {
-        var page = _this.db.pages[relativePath];
+      for (var relativePath in this.db.pages) {
+        var page = this.db.pages[relativePath];
         // console.log('\t-> does page %s match?', page.relativePath);
         if (!page.dataObject.properties) {
           console.log('ERROR. The universe has imploded and a page did not contain properties.  Things should be built in a way this cannot happen, yet it did.  I cannot continue.  Here is the page: ', page);
           process.exit();
         }
-        for (var i=0; i < page.dataObject.properties.length; i++) {
+        for (var i = 0; i < page.dataObject.properties.length; i++) {
           var property = page.dataObject.properties[i];
           if (property.name === 'route') {
             // console.log('url pattern matching "%s" to "%s"', property.content, url);
@@ -370,12 +368,12 @@ Fancy.prototype.requestPage = function(url, callback) {
 
     if (pages) {
       // console.log('\t-> %s found pages', pages.length);
-      var reducedPage = _this._reduceMatchingRoutes(pages);
+      var reducedPage = this._reduceMatchingRoutes(pages);
       if (reducedPage) {
         return void callback(null, {
           page: reducedPage,
           layout: reducedPage.layout || 'primary',
-          res: _this.createResponse(url, reducedPage, templateMatchParams[reducedPage.relativePath])
+          res: this.createResponse(url, reducedPage, templateMatchParams[reducedPage.relativePath])
         });
       }
     }
