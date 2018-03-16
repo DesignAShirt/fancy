@@ -1,6 +1,7 @@
 "use strict";
 
 var cheerio = require('cheerio');
+var { map } = require('lodash');
 
 module.exports = function(contents, callback) {
   var $ = cheerio.load(contents);
@@ -26,6 +27,7 @@ module.exports = function(contents, callback) {
   // Come up with a more flexible system to force content to be on the page. This
   // is a common thing to need in the real world.
   addProp('headerScripts', $.html('head>script'));
+  addProp('images', map($('img'), img => cheerio(img).attr('src')));
 
   $('head>property,head>meta').each(function() {
     var $el = $(this);
